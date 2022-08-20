@@ -1,10 +1,24 @@
 import { Box, Flex } from "@chakra-ui/layout";
-import { Spinner } from "@chakra-ui/react";
+import { Button, Spinner } from "@chakra-ui/react";
+import { useState } from "react";
 import { Grave } from "../../types/Grave";
-import { useGetGraves } from "../../utils/hooks/useGetGraves/useGetGraves";
+import {
+  useGetGravesPaginated,
+} from "../../utils/hooks/graves/useGetGraves/useGetGraves";
 
 export const GraveFeed = (): JSX.Element => {
-  const { data: graves, isLoading, isError } = useGetGraves();
+  const [page, setPage] = useState<any>(1);
+  const [limit, setLimit] = useState<any>(10);
+
+  const {
+    data: graves,
+    isLoading,
+    isError,
+  } = useGetGravesPaginated(page, limit);
+
+  const loadMore = () => {
+    setPage((prev: number) => prev + 1);
+  };
 
   if (isLoading) return <Spinner />;
 
@@ -12,6 +26,7 @@ export const GraveFeed = (): JSX.Element => {
 
   return (
     <Box>
+      <Button onClick={loadMore}>Load More Graves</Button>
       {graves?.map((grave: Grave) => {
         return (
           <Flex shadow="md" p={2} key={grave._id}>
