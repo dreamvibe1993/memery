@@ -38,18 +38,27 @@ export const useGetGravesPaginated = (
 ): UseGetGravesType => {
   const [data, setData] = useState<Array<Grave>>([]);
   const [error, setError] = useState<Error>();
+  const [loading, setLoading] = useState<boolean>(false);
+  const [hasMore, setHasMore] = useState<boolean>(true);
 
-  const fetcher = useCallback(async (page: number = 1, limit: number = 10) => {
-    try {
-      let gravesData = await client(
-        `${ORIGIN}${API_V1_GRAVES}/paginate?page=${page}&limit=${limit}`
-      );
-      gravesData = strip(gravesData);
-      setData((prev) => [...prev, ...gravesData]);
-    } catch (e: any) {
-      setError(e);
-    }
-  }, []);
+  const fetcher = useCallback(
+    async (page: number = 1, limit: number = 10) => {
+      if (!hasMore) return Promise.resolve();
+      setLoading(true);
+      try {
+        let gravesData = await client(
+          `${ORIGIN}${API_V1_GRAVES}/paginate?page=${page}&limit=${limit}`
+        );
+        setHasMore(gravesData.has_more);
+        setData((prev) => [...new Set([...prev, ...strip(gravesData)])]);
+      } catch (e: any) {
+        setError(e);
+      } finally {
+        setLoading(false);
+      }
+    },
+    [hasMore]
+  );
 
   useEffect(() => {
     debounce(() => {
@@ -59,7 +68,7 @@ export const useGetGravesPaginated = (
 
   return {
     data,
-    isLoading: !error && !data,
+    isLoading: (!error && !data) || loading,
     isError: error,
   };
 };
