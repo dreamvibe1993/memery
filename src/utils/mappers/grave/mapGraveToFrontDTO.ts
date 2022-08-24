@@ -1,6 +1,6 @@
 import { graveModel } from "../../../models/grave/grave";
 import { Grave } from "../../../types/Grave";
-import { mapDateTo } from "../date/mapDateToDDMMYYYY";
+import { mapDateTo } from "../date/mapDate";
 
 export const convertGraveToFrontDTO = (grave: any): Grave | null => {
   if (!grave) return null;

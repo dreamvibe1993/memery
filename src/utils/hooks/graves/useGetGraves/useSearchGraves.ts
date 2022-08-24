@@ -1,9 +1,8 @@
 import { useCallback, useEffect, useState } from "react";
-import useSWR from "swr";
 import { API_V1_GRAVES } from "../../../../configs/urls/api/api-urls";
 import { ORIGIN } from "../../../../configs/urls/app/app-urls";
 import { Grave } from "../../../../types/Grave";
-import { client, ClientAction } from "../../../api/client/client";
+import { client } from "../../../api/client/client";
 import debounce from "../../../optimization/debouncer/debouncer";
 import graveStore from "../../../../store/mobx/graves/graves";
 
@@ -18,57 +17,42 @@ const strip = (data: any): Array<Grave> => {
   return data;
 };
 
-export const useGetGraves = (): UseGetGravesType => {
-  let { data, error } = useSWR<Array<Grave> | undefined, Error>(
-    `${ORIGIN}${API_V1_GRAVES}`,
-    client as ClientAction<Grave[] | undefined>
-  );
+export const useSearchGraves = (word: string): UseGetGravesType => {
+  const { setGravesList } = graveStore;
 
-  data = strip(data);
-
-  return {
-    data,
-    isLoading: !error && !data,
-    isError: error,
-  };
-};
-
-export type UseGetGravesPaginatedProps = {
-  page?: number;
-  limit?: number;
-  name?: string;
-};
-
-export const useGetGravesPaginated = (
-  props: UseGetGravesPaginatedProps
-): UseGetGravesType => {
-  const { name } = props;
-
+  const [data, setData] = useState<Array<Grave>>([]);
   const [error, setError] = useState<Error>();
   const [loading, setLoading] = useState<boolean>(false);
 
   const fetcher = useCallback(
-    async (name?: string) => {
+    async (word: string) => {
+      if (!word) return;
       setLoading(true);
       try {
-        await graveStore.api.getGraves({ name });
+        let gravesData = await client(
+          `${ORIGIN}${API_V1_GRAVES}/search?name=${word}`
+        );
+        // const newGraves = strip(gravesData);
+        // setData((prev) => [...new Set([...prev, ...newGraves])]);
+        // setGravesList(newGraves);
       } catch (e: any) {
         setError(e);
       } finally {
         setLoading(false);
       }
     },
-    []
+    [word]
   );
 
   useEffect(() => {
     debounce(() => {
-      fetcher(name);
-    });
-  }, [fetcher, name]);
+      fetcher(word);
+    }, 500);
+  }, [word, fetcher]);
 
   return {
-    isLoading: (!error && !graveStore.gravesList) || loading,
+    data,
+    isLoading: (!error && !data) || loading,
     isError: error,
   };
 };

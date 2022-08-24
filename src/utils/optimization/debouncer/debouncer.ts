@@ -2,11 +2,11 @@ const DELAY_MS = 100;
 
 function debounceCached() {
   var timeoutId: ReturnType<typeof setTimeout>;
-  return function debounce(fn: () => any): any {
+  return function debounce(fn: () => any, delay?: number): any {
     clearTimeout(timeoutId);
     timeoutId = setTimeout(() => {
       return fn();
-    }, DELAY_MS);
+    }, delay || DELAY_MS);
   };
 }
 
