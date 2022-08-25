@@ -1,4 +1,4 @@
-import { action, makeAutoObservable, observable, toJS } from "mobx";
+import { action, makeAutoObservable, observable } from "mobx";
 import { API_V1_GRAVES } from "../../../../configs/urls/api/api-urls";
 import { ORIGIN } from "../../../../configs/urls/app/app-urls";
 import { Grave } from "../../../../types/Grave";
@@ -28,6 +28,7 @@ export class GetGravesModel {
   private searchList: Grave[] = [];
   isLoading: boolean = false;
   isError: boolean = false;
+  isEmpty: boolean | undefined = undefined;
   graveStore: GraveStore;
 
   constructor(graveStore: GraveStore) {
@@ -52,6 +53,7 @@ export class GetGravesModel {
         ...this.gravesList,
         ...newGraves,
       ]);
+      this.isEmpty = !!!uniqueGraves.length;
       this.hasMoreToLoad = data.has_more;
       this.gravesList = uniqueGraves;
       this.graveStore.setGravesList(this.gravesList);
