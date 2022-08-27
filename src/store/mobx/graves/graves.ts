@@ -4,6 +4,8 @@ import { GetGravesModel } from "./api/getGravesModel";
 
 const GraveStoreProps = {
   gravesList: observable,
+  searchList: observable,
+  api: observable,
 
   setGravesList: action.bound,
   setSearchList: action.bound,

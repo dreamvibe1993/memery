@@ -11,11 +11,33 @@ export type GetGravesProps = {
 };
 
 const GetGravesModelProps = {
+  page: observable,
+  limit: observable,
+  name: observable,
+  hasMoreToLoad: observable,
+  hasMoreToSearch: observable,
+  gravesList: observable,
+  searchList: observable,
   isLoading: observable,
   isError: observable,
-  gravesList: observable,
+  isEmpty: observable,
+  graveStore: observable,
 
   getGraves: action.bound,
+  loadGraves: action.bound,
+  searchGraves: action.bound,
+  returnUniqueEntries: action.bound,
+  setEmptiness: action.bound,
+  emptyGravesList: action.bound,
+  emptySearchList: action.bound,
+  setThereIsMore: action.bound,
+  setNextPage: action.bound,
+  setFirstPage: action.bound,
+  setLimit: action.bound,
+  setLoadingStart: action.bound,
+  setLoadingFinish: action.bound,
+  setError: action.bound,
+  strip: action.bound,
 };
 
 export class GetGravesModel {
@@ -29,7 +51,7 @@ export class GetGravesModel {
   isLoading: boolean = false;
   isError: boolean = false;
   isEmpty: boolean | undefined = undefined;
-  graveStore: GraveStore;
+  private graveStore: GraveStore;
 
   constructor(graveStore: GraveStore) {
     makeAutoObservable(this, GetGravesModelProps);
@@ -53,7 +75,7 @@ export class GetGravesModel {
         ...this.gravesList,
         ...newGraves,
       ]);
-      this.isEmpty = !!!uniqueGraves.length;
+      this.setEmptiness(!!!uniqueGraves.length);
       this.hasMoreToLoad = data.has_more;
       this.gravesList = uniqueGraves;
       this.graveStore.setGravesList(this.gravesList);
@@ -96,6 +118,10 @@ export class GetGravesModel {
       (value, index, self) =>
         index === self.findIndex((t) => t._id === value._id)
     );
+  }
+
+  private setEmptiness(isEmpty: boolean) {
+    this.isEmpty = isEmpty;
   }
 
   private emptyGravesList(): void {
@@ -143,6 +169,7 @@ export class GetGravesModel {
   }
 
   setLimit(limit: number): void {
+    if (this.limit === limit) return;
     this.limit = limit;
     this.getGraves({ name: this.name });
   }

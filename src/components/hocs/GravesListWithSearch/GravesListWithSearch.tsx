@@ -22,6 +22,8 @@ export const GravesListWithSearch = observer(
       api.getGraves({ name: e.target.value });
     };
 
+    const graves = input ? searchList : gravesList;
+
     return (
       <>
         <ListLayout pb={0}>
@@ -33,7 +35,7 @@ export const GravesListWithSearch = observer(
             variant="searchbar"
           />
         </ListLayout>
-        {children({ graves: input ? searchList : gravesList })}
+        {children({ graves })}
       </>
     );
   }

@@ -14,6 +14,8 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
   (props): JSX.Element => {
     const ListContainerRef = useRef<HTMLDivElement | null>(null);
 
+    const { api } = graveStore;
+
     useEffect(() => {
       if (!ListContainerRef.current) return;
       const { current: ListContainer } = ListContainerRef;
@@ -24,9 +26,8 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
         (listContainerHeight - paddings) / oneCard
       );
       api.setLimit(numberOfCards);
-    }, []);
+    }, [api]);
 
-    const { api } = graveStore;
     const { graves } = props;
 
     const loadMore = (): void => {

@@ -1,4 +1,5 @@
 import { observer } from "mobx-react-lite";
+import { DrawerLeft } from "../../components/common/Drawer/Drawer";
 import {
   GraveFeed,
   GraveFeedProps,
@@ -7,10 +8,13 @@ import { GravesListWithSearch } from "../../components/hocs/GravesListWithSearch
 
 export const MainPage = observer((): JSX.Element => {
   return (
-    <GravesListWithSearch>
-      {(listOf: GraveFeedProps) => {
-        return <GraveFeed graves={listOf.graves} />;
-      }}
-    </GravesListWithSearch>
+    <>
+      <DrawerLeft />
+      <GravesListWithSearch>
+        {(listOf: GraveFeedProps) => {
+          return <GraveFeed graves={listOf.graves} />;
+        }}
+      </GravesListWithSearch>
+    </>
   );
 });

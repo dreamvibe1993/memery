@@ -5,12 +5,11 @@ import {
   Center,
   Text,
   Box,
-  Fade,
   Collapse,
   useDisclosure,
 } from "@chakra-ui/react";
+import { observer } from "mobx-react-lite";
 import { IoEnterOutline } from "react-icons/io5";
-import { useInView } from "react-intersection-observer";
 import { Grave } from "../../../types/Grave";
 import { mapDateTo } from "../../../utils/mappers/date/mapDate";
 
@@ -18,15 +17,13 @@ export type GraveFeedItemProps = {
   grave: Grave;
 };
 
-export const GraveFeedItem = (props: GraveFeedItemProps): JSX.Element => {
-  const { grave } = props;
-  const { isOpen, onToggle } = useDisclosure();
+export const GraveFeedItem = observer(
+  (props: GraveFeedItemProps): JSX.Element => {
+    const { grave } = props;
+    const { isOpen, onToggle } = useDisclosure();
 
-  const { ref, inView } = useInView({ delay: 150, triggerOnce: true });
-
-  return (
-    <Box ref={ref}>
-      <Fade in={inView}>
+    return (
+      <Box>
         <Grid
           key={grave._id}
           border="1px"
@@ -88,7 +85,7 @@ export const GraveFeedItem = (props: GraveFeedItemProps): JSX.Element => {
             <IoEnterOutline />
           </GridItem>
         </Grid>
-      </Fade>
-    </Box>
-  );
-};
+      </Box>
+    );
+  }
+);
