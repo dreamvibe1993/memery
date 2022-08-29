@@ -5,7 +5,6 @@ import * as yup from "yup";
 export const graveSchema = yup.object().shape({
   photos: yup
     .array()
-    .min(1, "Please add a photo.")
     .max(4, "Please delete some pictures. Max number is 4."),
   lastWords: yup
     .string()

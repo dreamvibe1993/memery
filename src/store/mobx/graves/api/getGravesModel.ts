@@ -38,7 +38,31 @@ const GetGravesModelProps = {
   setLoadingFinish: action.bound,
   setError: action.bound,
   strip: action.bound,
+  reload: action.bound,
 };
+
+// class Observer {
+//   observable = {
+//     observable: null,
+//     action: () => {},
+//   };
+
+//   subscribe(observable: any) {
+//     observableInstance.observable = observable;
+
+//     return {
+//       to: (func: any) => {
+//         observableInstance.action = func;
+//         this.observables.push(observableInstance);
+//       },
+//     };
+//   }
+//   notify() {
+//     this.observables.forEach((instance) => {
+//       instance.action();
+//     });
+//   }
+// }
 
 export class GetGravesModel {
   private page: number = 1;
@@ -53,9 +77,16 @@ export class GetGravesModel {
   isEmpty: boolean | undefined = undefined;
   private graveStore: GraveStore;
 
+  // observer = new Observer();
+
   constructor(graveStore: GraveStore) {
     makeAutoObservable(this, GetGravesModelProps);
     this.graveStore = graveStore;
+    // this.observer.subscribe(this.page).to(this.getGraves);
+    // this.setNextPage = () => {
+    //   this.setNextPage();
+    //   this.observer.notify();
+    // }
   }
 
   private async loadGraves() {
@@ -146,22 +177,27 @@ export class GetGravesModel {
     this.getGraves({ name: this.name });
   }
 
-  getGraves(props: { name?: string }): void {
+  async getGraves(props: { name?: string }): Promise<void> {
     const { name } = props;
     this.name = name;
     const searchMode = !!this.name;
 
-    debounce(() => {
+    debounce(async () => {
       if (searchMode) {
         this.emptyGravesList();
         this.setThereIsMore("toLoad");
-        this.searchGraves();
+        await this.searchGraves();
       } else {
         this.emptySearchList();
         this.setThereIsMore("toSearch");
-        this.loadGraves();
+        await this.loadGraves();
       }
     }, 300);
+  }
+
+  async reload(): Promise<void> {
+    this.setFirstPage();
+    await this.getGraves({});
   }
 
   setFirstPage(): void {

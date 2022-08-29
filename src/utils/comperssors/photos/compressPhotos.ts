@@ -22,7 +22,6 @@ export const compressPhotos = async (
       )
     );
   } catch (e) {
-    alert("35: " + e);
     console.error(e);
     console.trace(e);
   }
