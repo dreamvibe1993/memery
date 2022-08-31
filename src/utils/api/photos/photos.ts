@@ -7,7 +7,6 @@ export const updatePhotos = async (
 ) => {
   const formData = new FormData();
   photos.forEach((file: FileExtended) => {
-    console.log(file.file)
     formData.append("multi-files", file.file, file.file.name);
   });
   return await axios

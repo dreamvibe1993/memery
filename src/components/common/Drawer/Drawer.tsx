@@ -13,7 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { useContext } from "react";
 import { DrawerContext } from "../../../contexts/drawer-context/drawer-context";
-import { GetGravesForm } from "../../forms/GetGravesForm/GetGravesForm";
+import { AddGraveForm } from "../../forms/AddGraveForm/AddGraveForm";
 import { HeaderLayout } from "../../layouts/HeaderLayout/HeaderLayout";
 import graveStore from "../../../store/mobx/graves/graves";
 
@@ -40,14 +40,14 @@ export function DrawerLeft() {
           </DrawerHeader>
 
           <DrawerBody p={5}>
-            <GetGravesForm handleAfterSubmit={reloadGraves} />
+            <AddGraveForm handleAfterSubmit={reloadGraves} />
           </DrawerBody>
 
           <DrawerFooter justifyContent="space-between">
             <Button variant="outline" mr={3} onClick={onClose}>
               Отменить
             </Button>
-            <Button type="submit" form="get-graves-form">
+            <Button type="submit" form="add-graves-form">
               Сохранить
             </Button>
           </DrawerFooter>
