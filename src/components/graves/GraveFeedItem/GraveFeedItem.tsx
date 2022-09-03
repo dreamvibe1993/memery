@@ -15,11 +15,12 @@ import { mapDateTo } from "../../../utils/mappers/date/mapDate";
 
 export type GraveFeedItemProps = {
   grave: Grave;
+  onEnterGrave: (objectId: string) => void;
 };
 
 export const GraveFeedItem = observer(
   (props: GraveFeedItemProps): JSX.Element => {
-    const { grave } = props;
+    const { grave, onEnterGrave } = props;
     const { isOpen, onToggle } = useDisclosure();
 
     return (
@@ -81,6 +82,7 @@ export const GraveFeedItem = observer(
               },
             }}
             color="gray.500"
+            onClick={() => onEnterGrave(grave._id)}
           >
             <IoEnterOutline />
           </GridItem>

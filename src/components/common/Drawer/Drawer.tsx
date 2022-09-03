@@ -19,11 +19,12 @@ import graveStore from "../../../store/mobx/graves/graves";
 
 export function DrawerLeft() {
   const { isOpen, onClose } = useContext(DrawerContext);
-  const {api} = graveStore;
+  const { api } = graveStore;
 
   const reloadGraves = async () => {
-    onClose()
-  }
+    await api.reload();
+    onClose();
+  };
 
   return (
     <>

@@ -1,17 +1,25 @@
 import { Flex } from "@chakra-ui/layout";
 import { Box, Center, Fade, Spinner, Text } from "@chakra-ui/react";
-import React, { UIEventHandler, useEffect, useRef } from "react";
+import React, { UIEventHandler, useEffect, useRef, useState } from "react";
 import styled from "styled-components";
 import { Grave } from "../../../types/Grave";
 import { GraveFeedItem } from "../GraveFeedItem/GraveFeedItem";
 import { observer } from "mobx-react-lite";
 import graveStore from "../../../store/mobx/graves/graves";
 import { ListLayout } from "../../layouts/ListLayout/ListLayout";
+import { Redirect } from "react-router-dom";
+import { routes } from "../../../configs/urls/app/app-urls";
 
 export type GraveFeedProps = { graves: Grave[] };
 
 export const GraveFeed: React.FC<GraveFeedProps> = observer(
   (props): JSX.Element => {
+    const [pickedGraveId, setPickedGraveId] = useState("");
+
+    const enterGrave = (objectId: string): void => {
+      setPickedGraveId(objectId);
+    };
+
     const ListContainerRef = useRef<HTMLDivElement | null>(null);
 
     const { api } = graveStore;
@@ -51,6 +59,10 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
       }
     };
 
+    if (!!pickedGraveId) {
+      return <Redirect to={`${routes.grave.root}/${pickedGraveId}`} />;
+    }
+
     if (api.isEmpty === undefined) {
       return (
         <ListLayout ref={ListContainerRef}>
@@ -79,7 +91,7 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
         <List direction="column">
           {graves.length > 0 ? (
             graves.map((grave: Grave) => {
-              return <GraveFeedItem key={grave._id} grave={grave} />;
+              return <GraveFeedItem key={grave._id} grave={grave} onEnterGrave={enterGrave}/>;
             })
           ) : api.isEmpty === true ? (
             <TextWrapper>

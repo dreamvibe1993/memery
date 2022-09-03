@@ -7,7 +7,7 @@ type RouteProp = Record<string, string>;
 
 export type Routes = Record<string, string | RouteProp>;
 
-export const routes: Routes = {
+export const routes = {
   root: "/",
   tomb: {
     root: "/tomb",
@@ -26,5 +26,8 @@ export const routes: Routes = {
   },
   about: {
     root: "/about",
+  },
+  grave: {
+    root: "/grave",
   },
 };

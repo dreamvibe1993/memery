@@ -1,6 +1,5 @@
 import { Center, Fade, Spinner, VStack } from "@chakra-ui/react";
 import { useFormik } from "formik";
-import { forwardRef } from "react";
 import { graveSchema } from "../../../models/yup/yup-schemas";
 import { usePostGrave } from "../../../utils/hooks/graves/usePostGrave/usePostGrave";
 import { usePhotos } from "../../../utils/hooks/photos/usePhotos";
@@ -74,8 +73,8 @@ export const AddGraveForm = (props: AddGraveFormProps) => {
   return (
     <form onSubmit={formik.handleSubmit} id="add-graves-form">
       <VStack pos="relative">
-        {isPostingInProgress ? (
-          <Fade in={isPostingInProgress}>
+        <Fade in={isPostingInProgress}>
+          {isPostingInProgress ? (
             <Center
               pos="absolute"
               h="100%"
@@ -83,11 +82,13 @@ export const AddGraveForm = (props: AddGraveFormProps) => {
               opacity="0.5"
               zIndex={90}
               bgColor="white"
+              top="0"
+              left="0"
             >
               <Spinner />
             </Center>
-          </Fade>
-        ) : null}
+          ) : null}
+        </Fade>
         {inputs.map((input) => (
           <InputWithErrorState
             key={input.name}

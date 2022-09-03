@@ -197,6 +197,8 @@ export class GetGravesModel {
 
   async reload(): Promise<void> {
     this.setFirstPage();
+    this.setThereIsMore("toLoad");
+    this.setThereIsMore("toSearch");
     await this.getGraves({});
   }
 

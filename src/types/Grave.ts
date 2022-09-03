@@ -1,4 +1,3 @@
-import { FileExtended } from "../utils/comperssors/photos/compressPhotos";
 import { Gift } from "./Gift";
 import { User } from "./User";
 
