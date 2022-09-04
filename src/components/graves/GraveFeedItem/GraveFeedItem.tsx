@@ -10,17 +10,17 @@ import {
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { IoEnterOutline } from "react-icons/io5";
+import { Link } from "react-router-dom";
 import { Grave } from "../../../types/Grave";
 import { mapDateTo } from "../../../utils/mappers/date/mapDate";
 
 export type GraveFeedItemProps = {
   grave: Grave;
-  onEnterGrave: (objectId: string) => void;
 };
 
 export const GraveFeedItem = observer(
   (props: GraveFeedItemProps): JSX.Element => {
-    const { grave, onEnterGrave } = props;
+    const { grave } = props;
     const { isOpen, onToggle } = useDisclosure();
 
     return (
@@ -65,26 +65,31 @@ export const GraveFeedItem = observer(
             </Text>
             <Collapse in={isOpen} animateOpacity>
               <Text variant="caption">
-                Родился: {mapDateTo("DDMMYYYY", grave.died)}
+                Родился: {mapDateTo("DDMMYYYY", grave.born)}
               </Text>
               <Text variant="caption">
-                Смерть: {mapDateTo("DDMMYYYY", grave.born)}
+                Смерть: {mapDateTo("DDMMYYYY", grave.died)}
               </Text>
             </Collapse>
           </GridItem>
-          <GridItem
-            area="enter"
-            as={Center}
-            css={{
-              "*": {
-                height: "60%",
-                width: "60%",
-              },
-            }}
-            color="gray.500"
-            onClick={() => onEnterGrave(grave._id)}
-          >
-            <IoEnterOutline />
+          <GridItem area="enter" color="gray.500" as={Center}>
+            <Box
+              css={{
+                "*": {
+                  height: "60%",
+                  width: "60%",
+                },
+              }}
+              as={Link}
+              to={`/grave/${grave._id}`}
+              display="flex"
+              alignItems="center"
+              justifyContent="center"
+              h="100%"
+              w="100%"
+            >
+              <IoEnterOutline />
+            </Box>
           </GridItem>
         </Grid>
       </Box>

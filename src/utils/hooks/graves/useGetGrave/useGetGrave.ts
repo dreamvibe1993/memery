@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { API_V1_GRAVES } from "../../../../configs/urls/api/api-urls";
 import { ORIGIN } from "../../../../configs/urls/app/app-urls";
@@ -10,6 +10,7 @@ export type useGetGraveReturnType = {
   grave: Grave;
   isLoading: boolean;
   isError: boolean;
+  refreshGrave: () => void;
 };
 
 export const useGetGrave = () => {
@@ -18,8 +19,9 @@ export const useGetGrave = () => {
   const [grave, setGrave] = useState<Grave>();
   const [error, setError] = useState<Error>();
 
-  useEffect(() => {
+  const refreshGrave = useCallback((): void => {
     if (!params.id) return;
+    setGrave(undefined);
     debounce(() => {
       client(`${ORIGIN}${API_V1_GRAVES}/${params.id}`)
         .then((data: { grave: Grave }) => setGrave(data.grave))
@@ -30,5 +32,9 @@ export const useGetGrave = () => {
     });
   }, [params.id]);
 
-  return { grave, isLoading: !grave && !error, isError: !!error };
+  useEffect(() => {
+    refreshGrave();
+  }, [refreshGrave]);
+
+  return { grave, isLoading: !grave && !error, isError: !!error, refreshGrave };
 };
