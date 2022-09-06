@@ -7,7 +7,7 @@ import { client } from "../../../api/client/client";
 import debounce from "../../../optimization/debouncer/debouncer";
 
 export type useGetGraveReturnType = {
-  grave: Grave;
+  grave: Grave | undefined;
   isLoading: boolean;
   isError: boolean;
   refreshGrave: () => void;
