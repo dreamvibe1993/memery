@@ -1,7 +1,6 @@
 import {
   useDisclosure,
   Center,
-  Spinner,
   Grid,
   GridItem,
   Heading,
@@ -10,14 +9,6 @@ import {
   Text,
   Box,
   TransformProps,
-  Button,
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
   Textarea,
 } from "@chakra-ui/react";
 import { ReactNode, useState } from "react";
@@ -28,6 +19,7 @@ import { useHistory } from "react-router-dom";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
+import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
 
 export const GraveProfile = (props: useGetGraveReturnType) => {
   const { grave, refreshGrave } = props;
@@ -58,24 +50,20 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
 
   return (
     <>
-      <Modal isOpen={isMessageModalOpen} onClose={onMessageModalClose}>
-        <ModalOverlay />
-        <ModalContent borderRadius={"3px"} w="90%" maxW="500px">
-          <ModalHeader>Оставить сообщение для покойника</ModalHeader>
-          <ModalCloseButton />
-          <ModalBody>
-            <Textarea
-              resize="none"
-              onChange={handleGraveMessage}
-              value={message}
-            />
-          </ModalBody>
-          <ModalFooter>
-            <Button onClick={onMessageModalClose}>Отменить</Button>
-            <Button onClick={setNewGraveMessage}>Отправить</Button>
-          </ModalFooter>
-        </ModalContent>
-      </Modal>
+      <CommonModal
+        isOpen={isMessageModalOpen}
+        onConfirm={setNewGraveMessage}
+        onCancel={onMessageModalClose}
+        title="Оставить сообщение для покойника:"
+      >
+        <Textarea
+          resize="none"
+          onChange={handleGraveMessage}
+          value={message}
+          placeholder="Ваше сообщение. Максимальная длина 100 символов."
+          maxLength={100}
+        />
+      </CommonModal>
       <Grid
         gridTemplateRows={"auto 290px 10% 40%"}
         gridTemplateColumns={"20% 60% 20%"}

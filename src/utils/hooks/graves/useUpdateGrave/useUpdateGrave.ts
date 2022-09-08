@@ -5,10 +5,27 @@ import { Grave } from "../../../../types/Grave";
 
 export const useUpdateGrave = () => {
   const updateGraveMessages = async (grave: Grave, newMessage: string) => {
-    return axios.patch(`${ORIGIN}${API_V1_GRAVES}/${grave._id}`, {
-      chatLogs: [...grave.chatLogs, newMessage],
-    });
+    try {
+      return axios.patch(`${ORIGIN}${API_V1_GRAVES}/${grave._id}`, {
+        chatLogs: [...grave.chatLogs, newMessage],
+      });
+    } catch (e) {
+      console.error(e);
+    }
   };
 
-  return { updateGraveMessages };
+  const updateGraveGifts = async (grave: Grave) => {
+    try {
+      return axios.patch(`${ORIGIN}${API_V1_GRAVES}/${grave._id}`, grave);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  return { updateGraveMessages, updateGraveGifts };
 };
+
+
+//TODO: client with error handling
+// error boundary with мужик из краза 
+// убрать ненужные деструктуризации?
