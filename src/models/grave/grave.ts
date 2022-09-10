@@ -3,11 +3,13 @@ import { Grave } from "../../types/Grave";
 export const graveModel: Grave = {
   born: "",
   died: "",
-  gifts: {
-    candies: [],
-    btc: [],
-    vodka: [],
-  },
+  gifts: [
+    {
+      by: "",
+      wish: "",
+      type: "vodka",
+    },
+  ],
   chatLogs: [],
   graveCellNum: 0,
   _id: "",

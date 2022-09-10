@@ -11,20 +11,21 @@ import {
   Text,
   Center,
 } from "@chakra-ui/react";
-import { useContext } from "react";
+import { ReactNode, useContext } from "react";
 import { DrawerContext } from "../../../contexts/drawer-context/drawer-context";
-import { AddGraveForm } from "../../forms/AddGraveForm/AddGraveForm";
 import { HeaderLayout } from "../../layouts/HeaderLayout/HeaderLayout";
-import graveStore from "../../../store/mobx/graves/graves";
+import { IButton } from "../../../types/interfaces/components/common/IButton";
 
-export function DrawerLeft() {
+export type DrawerLeftProps = {
+  children: ReactNode;
+  title: string;
+  cancelButton?: IButton & { additionalAttrs?: any };
+  confirmButton?: IButton & { additionalAttrs?: any };
+};
+
+export function DrawerLeft(props: DrawerLeftProps) {
   const { isOpen, onClose } = useContext(DrawerContext);
-  const { api } = graveStore;
-
-  const reloadGraves = async () => {
-    await api.reload();
-    onClose();
-  };
+  const { children, cancelButton, confirmButton, title } = props;
 
   return (
     <>
@@ -35,22 +36,30 @@ export function DrawerLeft() {
             <HeaderLayout>
               <DrawerCloseButton />
               <GridItem area="body" as={Center}>
-                <Text>Создать могилу</Text>
+                <Text>{title}</Text>
               </GridItem>
             </HeaderLayout>
           </DrawerHeader>
 
-          <DrawerBody p={5}>
-            <AddGraveForm handleAfterSubmit={reloadGraves} />
-          </DrawerBody>
+          <DrawerBody p={5}>{children}</DrawerBody>
 
           <DrawerFooter justifyContent="space-between">
-            <Button variant="outline" mr={3} onClick={onClose}>
-              Отменить
-            </Button>
-            <Button type="submit" form="add-graves-form">
-              Сохранить
-            </Button>
+            {cancelButton && (
+              <Button
+                onClick={cancelButton.onClick}
+                {...cancelButton.additionalAttrs}
+              >
+                {cancelButton.title || "Отменить"}
+              </Button>
+            )}
+            {confirmButton && (
+              <Button
+                onClick={confirmButton.onClick}
+                {...confirmButton.additionalAttrs}
+              >
+                {confirmButton.title || "Сохранить"}
+              </Button>
+            )}
           </DrawerFooter>
         </DrawerContent>
       </Drawer>

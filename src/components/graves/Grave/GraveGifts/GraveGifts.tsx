@@ -15,10 +15,11 @@ import { useState } from "react";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { MdLocalDrink } from "react-icons/md";
 import { TbCandy } from "react-icons/tb";
-import { Gifts } from "../../../../types/Grave";
+import { Gift, GiftTypes } from "../../../../types/Gift";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
+import { GiftWithModal } from "../../../gifts/Gift/Gift";
 
 export const GraveGifts = (props: useGetGraveReturnType) => {
   const { grave, refreshGrave } = props;
@@ -30,12 +31,11 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
 
   const { updateGraveGifts } = useUpdateGrave();
 
-  const [chosenGiftKey, setChosenGiftKey] = useState<keyof Gifts | undefined>();
+  const [chosenGiftKey, setChosenGiftKey] = useState<GiftTypes | undefined>();
   const [message, setMessage] = useState<string>("");
   const [isModalLoading, setModalLoading] = useState(false);
 
-  const chooseGift = (giftKey: keyof Gifts) => {
-    console.log(giftKey)
+  const chooseGift = (giftKey: GiftTypes) => {
     setChosenGiftKey(giftKey);
   };
 
@@ -44,11 +44,12 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
     if (!chosenGiftKey) return console.error("No gift was chosen!");
     try {
       setModalLoading(true);
-      grave.gifts[chosenGiftKey] = [
-        ...grave.gifts[chosenGiftKey],
+      grave.gifts = [
+        ...grave.gifts,
         {
           by: "anonymous",
           wish: message,
+          type: chosenGiftKey,
         },
       ];
       await updateGraveGifts(grave);
@@ -63,12 +64,6 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
     setMessage(e.target.value);
   };
 
-  const giftsSvgDictionary = {
-    vodka: <MdLocalDrink />,
-    btc: <FaMoneyBillWave />,
-    candies: <TbCandy />,
-  };
-
   if (!grave) return null;
 
   return (
@@ -76,8 +71,13 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
       <CommonModal
         title="Подарок"
         isOpen={isGiftModalOpen}
-        onCancel={onGiftModalClose}
-        onConfirm={presentGift}
+        confirmButton={{
+          onClick: presentGift,
+        }}
+        cancelButton={{
+          onClick: onGiftModalClose,
+        }}
+        onClose={onGiftModalClose}
         isLoading={isModalLoading}
       >
         <Text mb={4}>
@@ -104,28 +104,24 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
             justifyContent="space-between"
             p={3}
           >
-            {Object.keys(grave.gifts).reduce((acc: JSX.Element[], curr) => {
-              acc = [
-                ...acc,
-                ...grave.gifts[curr as keyof Gifts].map((gift) => (
-                  <GridItem
-                    bg="white"
-                    key={gift._id}
-                    shadow="base"
-                    as={Center}
-                    css={{
-                      svg: {
-                        width: "80%",
-                        height: "80%",
-                      },
-                    }}
-                  >
-                    {giftsSvgDictionary[curr as keyof Gifts]}
-                  </GridItem>
-                )),
-              ];
-              return acc;
-            }, [])}
+            {grave.gifts.map((gift: Gift) => {
+              return (
+                <GridItem
+                  bg="white"
+                  key={gift._id}
+                  shadow="base"
+                  as={Center}
+                  css={{
+                    svg: {
+                      width: "60%",
+                      height: "60%",
+                    },
+                  }}
+                >
+                  <GiftWithModal key={gift._id} {...gift} />
+                </GridItem>
+              );
+            })}
           </Grid>
         </Box>
         <Flex
@@ -141,13 +137,13 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
         >
           <IconButton
             icon={<FaMoneyBillWave />}
-            onClick={() => chooseGift("btc")}
+            onClick={() => chooseGift("money")}
             aria-label="Подарить денег"
             p={4}
           />
           <IconButton
             icon={<TbCandy />}
-            onClick={() => chooseGift("candies")}
+            onClick={() => chooseGift("candy")}
             aria-label="Подарить конфетов"
             p={4}
           />

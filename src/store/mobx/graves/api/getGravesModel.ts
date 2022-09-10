@@ -72,9 +72,10 @@ export class GetGravesModel {
   private hasMoreToSearch: boolean = true;
   private gravesList: Grave[] = [];
   private searchList: Grave[] = [];
+  isEmpty?: boolean;
   isLoading: boolean = false;
   isError: boolean = false;
-  isEmpty: boolean | undefined = undefined;
+  error?: Error;
   private graveStore: GraveStore;
 
   // observer = new Observer();
@@ -111,7 +112,7 @@ export class GetGravesModel {
       this.gravesList = uniqueGraves;
       this.graveStore.setGravesList(this.gravesList);
     } catch (e) {
-      this.setError();
+      this.setError(e);
     } finally {
       this.setLoadingFinish();
     }
@@ -138,7 +139,7 @@ export class GetGravesModel {
       this.searchList = uniqueGraves;
       this.graveStore.setSearchList(this.searchList);
     } catch (e) {
-      this.setError();
+      this.setError(e);
     } finally {
       this.setLoadingFinish();
     }
@@ -220,8 +221,9 @@ export class GetGravesModel {
     this.isLoading = false;
   }
 
-  private setError(): void {
+  private setError(e: any): void {
     this.isError = true;
+    this.error = e;
   }
 
   private strip(data: any): Array<Grave> {

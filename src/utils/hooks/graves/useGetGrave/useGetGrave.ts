@@ -5,6 +5,7 @@ import { ORIGIN } from "../../../../configs/urls/app/app-urls";
 import { Grave } from "../../../../types/Grave";
 import { client } from "../../../api/client/client";
 import debounce from "../../../optimization/debouncer/debouncer";
+import { useErrorHandler } from "react-error-boundary";
 
 export type useGetGraveReturnType = {
   grave: Grave | undefined;
@@ -15,6 +16,7 @@ export type useGetGraveReturnType = {
 
 export const useGetGrave = () => {
   const params = useParams<{ id: string }>();
+  const handleError = useErrorHandler();
 
   const [grave, setGrave] = useState<Grave>();
   const [error, setError] = useState<Error>();
@@ -28,6 +30,7 @@ export const useGetGrave = () => {
         .catch((e) => {
           console.error(e);
           setError(e);
+          handleError(e);
         });
     });
   }, [params.id]);

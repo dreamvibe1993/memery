@@ -19,6 +19,7 @@ import { useHistory } from "react-router-dom";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
+import { HEADER_HEIGHT } from "../../../common/Header/Header";
 import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
 
 export const GraveProfile = (props: useGetGraveReturnType) => {
@@ -52,8 +53,13 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
     <>
       <CommonModal
         isOpen={isMessageModalOpen}
-        onConfirm={setNewGraveMessage}
-        onCancel={onMessageModalClose}
+        confirmButton={{
+          onClick: setNewGraveMessage,
+        }}
+        cancelButton={{
+          onClick: onMessageModalClose,
+        }}
+        onClose={onMessageModalClose}
         title="Оставить сообщение для покойника:"
       >
         <Textarea
@@ -68,14 +74,13 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
         gridTemplateRows={"auto 290px 10% 40%"}
         gridTemplateColumns={"20% 60% 20%"}
         gridTemplateAreas={`
-  "head head close"
-  "cell1 cell2 cell3"
-  "cell4 cell5 cell6"
-  "chat chat chat"
-  `}
-        h="calc(100vh - 61px)"
+        "head head close"
+        "cell1 cell2 cell3"
+        "cell4 cell5 cell6"
+        "chat chat chat"
+        `}
+        h={`calc(100vh - ${HEADER_HEIGHT}px)`}
         w="100%"
-        p={5}
       >
         <GridItem area="head">
           <Heading>{grave.name}</Heading>
@@ -111,9 +116,9 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
         <GridItem area={"cell2"}>
           <Grid
             gridTemplateAreas={`
-        "header"
-        "photo"
-  `}
+            "header"
+            "photo"
+            `}
             gridTemplateRows="40px 250px"
             gridTemplateColumns="100%"
           >
@@ -145,24 +150,26 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
         <GridItem area={"cell6"}></GridItem>
 
         <GridItem area={"chat"} p={5}>
-          <Text variant="caption">Посетители могилы сказали: </Text>
-          <Flex
-            direction={"column"}
-            border="1px solid"
-            borderColor="gray.300"
-            h="100%"
-            p={3}
-          >
-            {grave.chatLogs.length < 1 ? (
-              <Text variant={"caption"}>
-                Здесь пока ничего не написали... Но ты можешь быть первым!
-              </Text>
-            ) : (
-              grave.chatLogs.map((chatlog: string, i: number) => {
-                return <Text key={chatlog + i}>&gt; {chatlog}</Text>;
-              })
-            )}
-          </Flex>
+          {grave.chatLogs.length > 0 ? (
+            <>
+              <Text variant="caption">Посетители могилы сказали: </Text>
+              <Flex
+                direction={"column"}
+                border="1px solid"
+                borderColor="gray.300"
+                h="100%"
+                p={3}
+              >
+                {grave.chatLogs.map((chatlog: string, i: number) => {
+                  return <Text key={chatlog + i}>&gt; {chatlog}</Text>;
+                })}
+              </Flex>
+            </>
+          ) : (
+            <Text variant="caption">
+              На могиле тишина... Оставьте сообщение, нажав на кнопочку выше.
+            </Text>
+          )}
         </GridItem>
       </Grid>
     </>

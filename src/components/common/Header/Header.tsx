@@ -4,6 +4,8 @@ import { GiHamburgerMenu } from "react-icons/gi";
 import { DrawerContext } from "../../../contexts/drawer-context/drawer-context";
 import { HeaderLayout } from "../../layouts/HeaderLayout/HeaderLayout";
 
+export const HEADER_HEIGHT = 61;
+
 export const Header = () => {
   const { toggleColorMode } = useColorMode();
   const { onOpen: openDrawer } = useContext(DrawerContext);
@@ -25,8 +27,9 @@ export const Header = () => {
             height: "100%",
           },
         }}
+        onClick={openDrawer}
       >
-        <GiHamburgerMenu onClick={openDrawer} />
+        <GiHamburgerMenu />
       </GridItem>
     </HeaderLayout>
   );
