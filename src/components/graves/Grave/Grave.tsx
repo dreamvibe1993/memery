@@ -27,13 +27,13 @@ export const Grave = () => {
     );
   }
 
-  if (graveUtils.isError) {
-    return <div>Implement error page</div>;
-  }
+  // if (graveUtils.isError) {
+  //   return <div>Implement error page</div>;
+  // }
 
-  if (!graveUtils.grave) {
-    return <div>Implement error page</div>;
-  }
+  // if (!graveUtils.grave) {
+  //   return <div>Implement error page</div>;
+  // }
 
   return (
     <>
@@ -45,7 +45,7 @@ export const Grave = () => {
       <Tabs isFitted variant="enclosed" mt={3}>
         <TabList>
           <Tab>Профиль</Tab>
-          <Tab>Подачки</Tab>
+          <Tab>Подарки</Tab>
         </TabList>
         <TabPanels>
           <TabPanel>

@@ -1,21 +1,22 @@
 import {
-  useDisclosure,
+  Box,
   Center,
+  Flex,
   Grid,
   GridItem,
   Heading,
-  Flex,
   Img,
   Text,
-  Box,
-  TransformProps,
   Textarea,
+  TransformProps,
+  useDisclosure,
 } from "@chakra-ui/react";
 import { ReactNode, useState } from "react";
 import { AiOutlineGift } from "react-icons/ai";
 import { BiExit, BiMessageRoundedEdit } from "react-icons/bi";
 import { FaDonate } from "react-icons/fa";
 import { useHistory } from "react-router-dom";
+import ImageViewer from "react-simple-image-viewer";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
@@ -29,6 +30,11 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
     isOpen: isMessageModalOpen,
     onOpen: onMessageModalOpen,
     onClose: onMessageModalClose,
+  } = useDisclosure();
+  const {
+    isOpen: isPhotoGalleryOpen,
+    onOpen: openPhotoGallery,
+    onClose: closePhotoGallery,
   } = useDisclosure();
   const history = useHistory();
 
@@ -136,7 +142,19 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
               border="1px solid grey"
               borderColor="gray.300"
             >
-              <Img src={grave?.photos[0]} />
+              {isPhotoGalleryOpen && (
+                <ImageViewer
+                  src={grave.photos}
+                  onClose={closePhotoGallery}
+                  disableScroll={true}
+                  closeOnClickOutside={true}
+                />
+              )}
+              <Img
+                src={grave.photos[0]}
+                onClick={openPhotoGallery}
+                cursor="pointer"
+              />
             </GridItem>
           </Grid>
         </GridItem>

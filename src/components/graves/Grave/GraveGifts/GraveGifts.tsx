@@ -6,15 +6,16 @@ import {
   Grid,
   GridItem,
   IconButton,
-  Textarea,
   Text,
+  Textarea,
   useDisclosure,
   VStack,
 } from "@chakra-ui/react";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { FaMoneyBillWave } from "react-icons/fa";
 import { MdLocalDrink } from "react-icons/md";
 import { TbCandy } from "react-icons/tb";
+import { CommonLoaderContext } from "../../../../contexts/common-loader/common-loader";
 import { Gift, GiftTypes } from "../../../../types/Gift";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
@@ -23,6 +24,8 @@ import { GiftWithModal } from "../../../gifts/Gift/Gift";
 
 export const GraveGifts = (props: useGetGraveReturnType) => {
   const { grave, refreshGrave } = props;
+  const { onOpen: openCommonLoader, onClose: closeCommonLoader } =
+    useContext(CommonLoaderContext);
   const {
     isOpen: isGiftModalOpen,
     onOpen: onGiftModalOpen,
@@ -44,6 +47,7 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
     if (!chosenGiftKey) return console.error("No gift was chosen!");
     try {
       setModalLoading(true);
+      openCommonLoader();
       grave.gifts = [
         ...grave.gifts,
         {
@@ -55,14 +59,21 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
       await updateGraveGifts(grave);
       await refreshGrave();
       onGiftModalClose();
+      setChosenGiftKey(undefined);
     } finally {
       setModalLoading(false);
+      closeCommonLoader();
     }
   };
+
+  //TODO: общий лоудер через портал
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);
   };
+
+  const isIconChosen = (key: GiftTypes) =>
+    chosenGiftKey === key || chosenGiftKey === undefined;
 
   if (!grave) return null;
 
@@ -104,11 +115,11 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
             justifyContent="space-between"
             p={3}
           >
-            {grave.gifts.map((gift: Gift) => {
+            {grave.gifts.map((gift: Gift, index: number) => {
               return (
                 <GridItem
                   bg="white"
-                  key={gift._id}
+                  key={gift._id || gift.by + index}
                   shadow="base"
                   as={Center}
                   css={{
@@ -139,18 +150,21 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
             icon={<FaMoneyBillWave />}
             onClick={() => chooseGift("money")}
             aria-label="Подарить денег"
+            opacity={isIconChosen("money") ? 1 : 0.5}
             p={4}
           />
           <IconButton
             icon={<TbCandy />}
             onClick={() => chooseGift("candy")}
             aria-label="Подарить конфетов"
+            opacity={isIconChosen("candy") ? 1 : 0.5}
             p={4}
           />
           <IconButton
             icon={<MdLocalDrink />}
             onClick={() => chooseGift("vodka")}
             aria-label="Оставить чарку водки"
+            opacity={isIconChosen("vodka") ? 1 : 0.5}
             p={4}
           />
         </Flex>

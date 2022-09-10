@@ -1,4 +1,5 @@
 import { Route, Switch } from "react-router-dom";
+import { NotFoundPage } from "../components/common/404/404";
 import { Grave } from "../components/graves/Grave/Grave";
 import { routes } from "../configs/urls/app/app-urls";
 import { MainPage } from "../pages/MainPage/MainPage";
@@ -11,6 +12,9 @@ export const Routes = () => {
       </Route>
       <Route path={`${routes.grave.root}/:id`} exact>
         <Grave />
+      </Route>
+      <Route path="*">
+        <NotFoundPage />
       </Route>
     </Switch>
   );

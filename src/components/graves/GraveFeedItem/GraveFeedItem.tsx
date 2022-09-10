@@ -13,6 +13,7 @@ import { IoEnterOutline } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import { Grave } from "../../../types/Grave";
 import { mapDateTo } from "../../../utils/mappers/date/mapDate";
+import ImageViewer from "react-simple-image-viewer";
 
 export type GraveFeedItemProps = {
   grave: Grave;
@@ -22,6 +23,12 @@ export const GraveFeedItem = observer(
   (props: GraveFeedItemProps): JSX.Element => {
     const { grave } = props;
     const { isOpen, onToggle } = useDisclosure();
+
+    const {
+      isOpen: isPhotoGalleryOpen,
+      onOpen: openPhotoGallery,
+      onClose: closePhotoGallery,
+    } = useDisclosure();
 
     return (
       <Box>
@@ -43,6 +50,14 @@ export const GraveFeedItem = observer(
           transition={!isOpen ? `all .1s .2s linear` : "all .1s ease"}
         >
           <GridItem area="photo" mr={2}>
+            {isPhotoGalleryOpen && (
+              <ImageViewer
+                src={grave.photos}
+                onClose={closePhotoGallery}
+                disableScroll={true}
+                closeOnClickOutside={true}
+              />
+            )}
             <Img
               src={
                 grave.photos.length > 0
@@ -54,6 +69,8 @@ export const GraveFeedItem = observer(
               w="100%"
               borderRadius="sm"
               transition={"all"}
+              cursor="pointer"
+              onClick={openPhotoGallery}
             />
           </GridItem>
           <GridItem area="name">
