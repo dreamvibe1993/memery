@@ -12,8 +12,11 @@ export const routes = {
   tomb: {
     root: "/tomb",
   },
-  auth: {
-    root: "/auth",
+  registration: {
+    root: "/sign-up",
+  },
+  login: {
+    root: "/login",
   },
   profile: {
     root: "/profile",
@@ -29,5 +32,8 @@ export const routes = {
   },
   grave: {
     root: "/grave",
+  },
+  graves: {
+    root: "/graves",
   },
 };

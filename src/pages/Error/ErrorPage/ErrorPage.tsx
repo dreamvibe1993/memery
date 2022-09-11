@@ -1,15 +1,6 @@
-import {
-  Heading,
-  VStack,
-  Text,
-  Button,
-  Center,
-  Img,
-  Box,
-  Code,
-} from "@chakra-ui/react";
-import MafiaInKrazGIF from "../../../../assets/img/gif/mafia-in-kraz.gif";
-import { HEADER_HEIGHT } from "../../Header/Header";
+import { Heading, VStack, Button, Center, Img, Code } from "@chakra-ui/react";
+import MafiaInKrazGIF from "../../../assets/img/gif/mafia-in-kraz.gif";
+import { HEADER_HEIGHT } from "../../../components/common/Header/Header";
 
 export interface FallbackProps {
   error: Error;

@@ -41,29 +41,6 @@ const GetGravesModelProps = {
   reload: action.bound,
 };
 
-// class Observer {
-//   observable = {
-//     observable: null,
-//     action: () => {},
-//   };
-
-//   subscribe(observable: any) {
-//     observableInstance.observable = observable;
-
-//     return {
-//       to: (func: any) => {
-//         observableInstance.action = func;
-//         this.observables.push(observableInstance);
-//       },
-//     };
-//   }
-//   notify() {
-//     this.observables.forEach((instance) => {
-//       instance.action();
-//     });
-//   }
-// }
-
 export class GetGravesModel {
   private page: number = 1;
   private limit: number = 0;
@@ -78,16 +55,9 @@ export class GetGravesModel {
   error?: Error;
   private graveStore: GraveStore;
 
-  // observer = new Observer();
-
   constructor(graveStore: GraveStore) {
     makeAutoObservable(this, GetGravesModelProps);
     this.graveStore = graveStore;
-    // this.observer.subscribe(this.page).to(this.getGraves);
-    // this.setNextPage = () => {
-    //   this.setNextPage();
-    //   this.observer.notify();
-    // }
   }
 
   private async loadGraves() {

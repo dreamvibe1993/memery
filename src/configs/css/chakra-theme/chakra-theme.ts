@@ -12,18 +12,19 @@ export const theme = extendTheme({
           fontSize: 12,
           color: "gray.500",
         },
+        drawerLink: {
+          fontSize: 18,
+          fontStyle: "semibold",
+        },
       },
     },
     Input: {
       variants: {
         searchbar: {
           field: {
-            border: "1px solid transparent",
-            borderTop: "none",
-            borderLeft: "none",
-            borderRight: "none",
-            borderColor: "gray.400",
-            borderRadius: '1px'
+            border: "1px solid",
+            borderColor: "blackAlpha.300",
+            borderRadius: "3px",
           },
         },
       },

@@ -1,7 +1,7 @@
 import { Button, Center, Heading, VStack } from "@chakra-ui/react";
 import { Link } from "react-router-dom";
-import { routes } from "../../../configs/urls/app/app-urls";
-import { HEADER_HEIGHT } from "../Header/Header";
+import { routes } from "../../configs/urls/app/app-urls";
+import { HEADER_HEIGHT } from "../../components/common/Header/Header";
 
 export const NotFoundPage = () => {
   return (

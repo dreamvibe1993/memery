@@ -14,6 +14,7 @@ import { Link } from "react-router-dom";
 import { Grave } from "../../../types/Grave";
 import { mapDateTo } from "../../../utils/mappers/date/mapDate";
 import ImageViewer from "react-simple-image-viewer";
+import { routes } from "../../../configs/urls/app/app-urls";
 
 export type GraveFeedItemProps = {
   grave: Grave;
@@ -98,7 +99,7 @@ export const GraveFeedItem = observer(
                 },
               }}
               as={Link}
-              to={`/grave/${grave._id}`}
+              to={`${routes.grave}/${grave._id}`}
               display="flex"
               alignItems="center"
               justifyContent="center"

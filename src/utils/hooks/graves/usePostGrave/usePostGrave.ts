@@ -32,14 +32,16 @@ export const usePostGrave = (): UsePostGraveType => {
     setIsLoading(true);
     try {
       const res = await updatePhotos(data.photos, apiRoute);
-      data.photos = res?.data?.photos;
+      if (!res?.data?.photos)
+        throw new Error("Ты похоже не залогинился, друг...");
+      data.photos = res.data.photos;
       const readyToPost = mapGraveToBackDTO(data);
       const response = await axios.post(
         `${ORIGIN}${API_V1_GRAVES}`,
-        readyToPost
-        // {
-        //   withCredentials: true,
-        // }
+        readyToPost,
+        {
+          withCredentials: true,
+        }
       );
       return response;
     } catch (e) {
