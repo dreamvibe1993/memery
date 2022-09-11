@@ -1,10 +1,7 @@
 import { Route, Switch } from "react-router-dom";
 import { NotFoundPage } from "../pages/404/404";
 import { Grave } from "../components/graves/Grave/Grave";
-import {
-  GraveFeedProps,
-  GraveFeed,
-} from "../components/graves/GraveFeed/GraveFeed";
+import { GraveFeed } from "../components/graves/GraveFeed/GraveFeed";
 import { GravesListWithSearch } from "../components/hocs/GravesListWithSearch/GravesListWithSearch";
 import { routes } from "../configs/urls/app/app-urls";
 import { Login } from "../pages/Login/Login";

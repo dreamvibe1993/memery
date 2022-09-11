@@ -1,7 +1,7 @@
 import { action, observable } from "mobx";
 import debounce from "../../../../utils/optimization/debouncer/debouncer";
-import { PaginationParams } from "../../common/classes/PaginationParams/PaginationParams";
-import { QueryParams } from "../../common/classes/QueryParams/QueryParams";
+import { PaginationParams } from "./PaginationParams/PaginationParams";
+import { QueryParams } from "./QueryParams/QueryParams";
 
 export const ListLoaderProps = {
   hasMore: observable,
@@ -20,7 +20,7 @@ export const ListLoaderProps = {
   setLoadingFinish: action.bound,
   setError: action.bound,
   strip: action.bound,
-  reload: action.bound,
+  flushData: action.bound,
   setHasMore: action.bound,
   setList: action.bound,
 };
@@ -89,7 +89,7 @@ export class ListsLoader<T extends { _id: string }> {
     this.isEmpty = isEmpty;
   }
 
-  async reload(): Promise<void> {
+  async flushData(): Promise<void> {
     this.pagination.setFirstPage();
     this.setList([]);
     this.setHasMore(true);

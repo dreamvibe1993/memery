@@ -5,7 +5,10 @@ import { Grave } from "../../../../../types/Grave";
 import { client } from "../../../../../utils/api/client/client";
 import { PaginationParams } from "../../../common/classes/PaginationParams/PaginationParams";
 import { QueryParams } from "../../../common/classes/QueryParams/QueryParams";
-import { ListLoaderProps, ListsLoader } from "../../api/getGravesModel";
+import {
+  ListLoaderProps,
+  ListsLoader,
+} from "../../../common/classes/ListsLoader";
 
 const LoaderProps = {
   load: action.bound,
@@ -17,9 +20,9 @@ export class Loader extends ListsLoader<Grave> {
     makeObservable(this, { ...LoaderProps, ...ListLoaderProps });
   }
   load = async () =>
-    this.loader(async () =>
-      client(
+    this.loader(async () => {
+      return client(
         `${ORIGIN}${API_V1_GRAVES}/paginate?page=${this.pagination.page}&limit=${this.pagination.limit}`
-      )
-    );
+      );
+    });
 }

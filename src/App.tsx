@@ -9,6 +9,7 @@ import { useCommonLoaderContext } from "./utils/hooks/contexts/useCommonLoaderCo
 import { CommonPreloader } from "./components/common/CommonPreloader/CommonPreloader";
 import { DrawerLeft } from "./components/common/Drawer/Drawer";
 import { DrawerLinksList } from "./components/common/Drawer/DrawerLinksList/DrawerLinksList";
+import { AuthWrapper } from "./components/hocs/AuthWrapper/AuthWrapper";
 
 function App() {
   const DrawerContext = useDrawerContext();
@@ -24,7 +25,9 @@ function App() {
         <CommonPreloaderContext>
           <CommonPreloader />
           <ErrorBoundary fallbackRender={ErrorPage}>
-            <Routes />
+            <AuthWrapper>
+              <Routes />
+            </AuthWrapper>
           </ErrorBoundary>
         </CommonPreloaderContext>
       </DrawerContext>

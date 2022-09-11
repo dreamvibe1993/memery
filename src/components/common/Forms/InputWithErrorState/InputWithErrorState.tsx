@@ -1,4 +1,9 @@
-import { FormControl, Input, FormErrorMessage } from "@chakra-ui/react";
+import {
+  FormControl,
+  Input,
+  FormErrorMessage,
+  FormLabel,
+} from "@chakra-ui/react";
 
 export type InputWithErrorStateProps = {
   isInvalid: boolean;
@@ -6,8 +11,10 @@ export type InputWithErrorStateProps = {
   value: string;
   name: string;
   type: string;
-  placeholder: string;
+  placeholder?: string;
   errorMessage: string | undefined;
+  isRequired?: boolean;
+  label?: string;
 };
 
 export const InputWithErrorState = (props: InputWithErrorStateProps) => {
@@ -19,10 +26,12 @@ export const InputWithErrorState = (props: InputWithErrorStateProps) => {
     type,
     placeholder,
     errorMessage,
+    label,
+    isRequired,
   } = props;
   return (
-    <FormControl isInvalid={isInvalid}>
-      {/* <FormLabel htmlFor="name">Имя</FormLabel> */}
+    <FormControl isInvalid={isInvalid} isRequired={isRequired}>
+      {label && <FormLabel htmlFor="name">{label}</FormLabel>}
       <Input
         placeholder={placeholder}
         type={type}
@@ -35,5 +44,3 @@ export const InputWithErrorState = (props: InputWithErrorStateProps) => {
     </FormControl>
   );
 };
-
-

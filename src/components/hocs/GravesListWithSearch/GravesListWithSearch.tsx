@@ -29,17 +29,19 @@ export const GravesListWithSearch = observer(
     };
 
     const reloadGraves = async () => {
+      gravesApi.flushData();
+      gravesApi.load();
       onClose();
     };
 
     useEffect(() => {
       if (!!queries.name) {
         setGravesApi(searcher);
-        searcher.reload();
+        searcher.flushData();
         searcher.load();
       } else {
         setGravesApi(loader);
-        searcher.reload();
+        searcher.flushData();
         loader.load();
       }
     }, [loader, searcher, queries.name]);

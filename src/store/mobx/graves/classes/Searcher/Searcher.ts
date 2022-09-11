@@ -5,7 +5,7 @@ import { Grave } from "../../../../../types/Grave";
 import { client } from "../../../../../utils/api/client/client";
 import { PaginationParams } from "../../../common/classes/PaginationParams/PaginationParams";
 import { QueryParams } from "../../../common/classes/QueryParams/QueryParams";
-import { ListLoaderProps, ListsLoader } from "../../api/getGravesModel";
+import { ListLoaderProps, ListsLoader } from "../../../common/classes/ListsLoader";
 
 const SearcherProps = {
   load: action.bound,

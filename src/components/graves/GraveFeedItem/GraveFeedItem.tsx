@@ -99,7 +99,7 @@ export const GraveFeedItem = observer(
                 },
               }}
               as={Link}
-              to={`${routes.grave}/${grave._id}`}
+              to={`${routes.grave.root}/${grave._id}`}
               display="flex"
               alignItems="center"
               justifyContent="center"
