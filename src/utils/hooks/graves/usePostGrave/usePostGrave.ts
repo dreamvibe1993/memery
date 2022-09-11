@@ -39,9 +39,9 @@ export const usePostGrave = (): UsePostGraveType => {
       const response = await axios.post(
         `${ORIGIN}${API_V1_GRAVES}`,
         readyToPost,
-        {
-          withCredentials: true,
-        }
+        // {
+        //   withCredentials: true,
+        // }
       );
       return response;
     } catch (e) {

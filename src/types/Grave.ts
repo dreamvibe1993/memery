@@ -11,6 +11,5 @@ export interface Grave {
   chatLogs: Array<string>;
   songs: Array<null>;
   lastWords: string;
-  graveCellNum: number;
   madeBy: User;
 }

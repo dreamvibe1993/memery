@@ -25,7 +25,6 @@ export {};
 //       vodka: [],
 //     },
 //     chatLogs: [],
-//     graveCellNum: Number(data.graveCellNum),
 //     id: uuidv4(),
 //     lastWords: data.lastWords,
 //     photos: data.photos,

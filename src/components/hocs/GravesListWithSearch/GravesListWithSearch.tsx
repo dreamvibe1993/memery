@@ -1,15 +1,18 @@
 import { Flex, IconButton, Input, useDisclosure } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { HiOutlinePlus } from "react-icons/hi";
+import { Loader } from "../../../store/mobx/graves/classes/Loader/Loader";
+import { Searcher } from "../../../store/mobx/graves/classes/Searcher/Searcher";
 import graveStore from "../../../store/mobx/graves/graves";
 import { AddGraveForm } from "../../forms/AddGraveForm/AddGraveForm";
-import { GraveFeedProps } from "../../graves/GraveFeed/GraveFeed";
 import { DrawerLayout } from "../../layouts/DrawerLayout/DrawerLayout";
 import { ListLayout } from "../../layouts/ListLayout/ListLayout";
-import { HiOutlinePlus } from "react-icons/hi";
+
+export type GravesApis = Loader | Searcher;
 
 export type GravesListWithSearchProps = {
-  children: (graves: GraveFeedProps) => JSX.Element;
+  children: (api: Loader | Searcher) => JSX.Element;
 };
 
 export const GravesListWithSearch = observer(
@@ -17,22 +20,29 @@ export const GravesListWithSearch = observer(
     const { children } = props;
 
     const { isOpen, onOpen, onClose } = useDisclosure();
+    const { loader, searcher, queries } = graveStore;
 
-    const [input, setInput] = useState<string>("");
-
-    const { gravesList, searchList, api } = graveStore;
+    const [gravesApi, setGravesApi] = useState<GravesApis>(loader);
 
     const handleSearchBarInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-      setInput(e.target.value);
-      api.getGraves({ name: e.target.value });
+      queries.setName(e.target.value);
     };
 
     const reloadGraves = async () => {
-      await api.reload();
       onClose();
     };
 
-    const graves = input ? searchList : gravesList;
+    useEffect(() => {
+      if (!!queries.name) {
+        setGravesApi(searcher);
+        searcher.reload();
+        searcher.load();
+      } else {
+        setGravesApi(loader);
+        searcher.reload();
+        loader.load();
+      }
+    }, [loader, searcher, queries.name]);
 
     return (
       <>
@@ -62,7 +72,7 @@ export const GravesListWithSearch = observer(
             <Input
               type="text"
               placeholder="ПОИСК"
-              value={input}
+              value={queries.name || ""}
               onChange={(e) => handleSearchBarInput(e)}
               variant="searchbar"
               mr={3}
@@ -74,8 +84,21 @@ export const GravesListWithSearch = observer(
             />
           </Flex>
         </ListLayout>
-        {children({ graves })}
+        {children(gravesApi)}
       </>
     );
   }
 );
+
+// const { postNewGrave } = usePostGrave();
+// const [counter, setCounter] = useState(1);
+/*() => {
+                postNewGrave({
+                  born: new Date(1999, 3, 8).toISOString(),
+                  died: new Date(2003, 3, 8).toISOString(),
+                  lastWords: "test",
+                  name: `crest${counter}`,
+                  photos: [],
+                });
+                setCounter((prev) => prev + 1);
+              }*/

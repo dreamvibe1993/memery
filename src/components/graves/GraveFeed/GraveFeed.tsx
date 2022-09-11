@@ -1,28 +1,23 @@
 import { Flex } from "@chakra-ui/layout";
-import {
-  Box,
-  Center,
-  Fade,
-  Spinner,
-  Text,
-} from "@chakra-ui/react";
+import { Box, Center, Fade, Spinner, Text } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import React, { UIEventHandler, useEffect, useRef } from "react";
 import { useErrorHandler } from "react-error-boundary";
 import styled from "styled-components";
 import graveStore from "../../../store/mobx/graves/graves";
 import { Grave } from "../../../types/Grave";
+import { GravesApis } from "../../hocs/GravesListWithSearch/GravesListWithSearch";
 import { ListLayout } from "../../layouts/ListLayout/ListLayout";
 import { GraveFeedItem } from "../GraveFeedItem/GraveFeedItem";
 
-export type GraveFeedProps = { graves: Grave[] };
+export type GraveFeedProps = { api: GravesApis };
 
 export const GraveFeed: React.FC<GraveFeedProps> = observer(
   (props): JSX.Element => {
     const ListContainerRef = useRef<HTMLDivElement | null>(null);
     const handleError = useErrorHandler();
-
-    const { api } = graveStore;
+    const { api } = props;
+    const { pagination } = graveStore;
 
     useEffect(() => {
       if (api.isError) {
@@ -39,13 +34,11 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
       const numberOfCards = Math.ceil(
         (listContainerHeight - paddings) / oneCard
       );
-      api.setLimit(numberOfCards);
-    }, [api]);
-
-    const { graves } = props;
+      pagination.setLimit(numberOfCards);
+    }, [pagination]);
 
     const loadMore = (): void => {
-      api.setNextPage();
+      api.load();
     };
 
     const evaluateBottom = (): number => {
@@ -65,7 +58,6 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
       }
     };
 
-  
     if (api.isEmpty === undefined) {
       return (
         <ListLayout ref={ListContainerRef}>
@@ -75,8 +67,6 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
         </ListLayout>
       );
     }
-
-    if (api.isError) return <div>еггог!</div>;
 
     return (
       <>
@@ -93,8 +83,8 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
             </Center>
           </Fade>
           <List direction="column">
-            {graves.length > 0 ? (
-              graves.map((grave: Grave) => {
+            {api.list.length > 0 ? (
+              api.list.map((grave: Grave) => {
                 return <GraveFeedItem key={grave._id} grave={grave} />;
               })
             ) : api.isEmpty === true ? (

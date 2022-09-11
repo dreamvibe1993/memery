@@ -1,38 +1,27 @@
-import { action, makeAutoObservable, observable } from "mobx";
-import { Grave } from "../../../types/Grave";
-import { GraveSearcher } from "../../../utils/api/graves/GraveSearcher/GraveSearcher";
-import { GetGravesModel } from "./api/getGravesModel";
+import { makeAutoObservable, observable } from 'mobx';
+import { PaginationParams } from '../common/classes/PaginationParams/PaginationParams';
+import { QueryParams } from '../common/classes/QueryParams/QueryParams';
+import { Loader } from './classes/Loader/Loader';
+import { Searcher } from './classes/Searcher/Searcher';
 
 const GraveStoreProps = {
-  gravesList: observable,
-  searchList: observable,
-  api: observable,
+  pagination: observable,
   searcher: observable,
-
-  setGravesList: action.bound,
-  setSearchList: action.bound,
-  dropGravesList: action.bound,
+  loader: observable,
+  queries: observable,
 };
-
 export class GraveStore {
-  gravesList: Grave[] = [];
-  searchList: Grave[] = [];
-  api: GetGravesModel;
-  searcher: GraveSearcher
+  queries: QueryParams;
+  pagination: PaginationParams;
+  loader: Loader;
+  searcher: Searcher;
 
   constructor() {
     makeAutoObservable(this, GraveStoreProps);
-    this.api = new GetGravesModel(this);
-    this.searcher = new GraveSearcher();
-  }
-  setGravesList(graves: Grave[]): void {
-    this.gravesList = graves;
-  }
-  setSearchList(graves: Grave[]): void {
-    this.searchList = graves;
-  }
-  dropGravesList(): void {
-    this.gravesList = [];
+    this.pagination = new PaginationParams(1, 0);
+    this.queries = new QueryParams();
+    this.searcher = new Searcher(this.pagination, this.queries);
+    this.loader = new Loader(this.pagination, this.queries);
   }
 }
 

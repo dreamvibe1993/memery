@@ -11,7 +11,6 @@ export const graveModel: Grave = {
     },
   ],
   chatLogs: [],
-  graveCellNum: 0,
   _id: "",
   lastWords: " ",
   photos: [],

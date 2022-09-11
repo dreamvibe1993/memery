@@ -1,121 +1,84 @@
-import { action, makeAutoObservable, observable } from "mobx";
-import { API_V1_GRAVES } from "../../../../configs/urls/api/api-urls";
-import { ORIGIN } from "../../../../configs/urls/app/app-urls";
-import { Grave } from "../../../../types/Grave";
-import { client } from "../../../../utils/api/client/client";
+import { action, observable } from "mobx";
 import debounce from "../../../../utils/optimization/debouncer/debouncer";
-import { GraveStore } from "../graves";
+import { PaginationParams } from "../../common/classes/PaginationParams/PaginationParams";
+import { QueryParams } from "../../common/classes/QueryParams/QueryParams";
 
-export type GetGravesProps = {
-  query: string;
-};
-
-const GetGravesModelProps = {
-  page: observable,
-  limit: observable,
-  name: observable,
-  hasMoreToLoad: observable,
-  hasMoreToSearch: observable,
-  gravesList: observable,
-  searchList: observable,
+export const ListLoaderProps = {
+  hasMore: observable,
+  list: observable,
   isLoading: observable,
   isError: observable,
   isEmpty: observable,
-  graveStore: observable,
+  error: observable,
+  pagination: observable,
+  queries: observable,
 
-  getGraves: action.bound,
-  loadGraves: action.bound,
-  searchGraves: action.bound,
+  load: action.bound,
   returnUniqueEntries: action.bound,
   setEmptiness: action.bound,
-  emptyGravesList: action.bound,
-  emptySearchList: action.bound,
-  setThereIsMore: action.bound,
-  setNextPage: action.bound,
-  setFirstPage: action.bound,
-  setLimit: action.bound,
   setLoadingStart: action.bound,
   setLoadingFinish: action.bound,
   setError: action.bound,
   strip: action.bound,
   reload: action.bound,
+  setHasMore: action.bound,
+  setList: action.bound,
 };
 
-export class GetGravesModel {
-  private page: number = 1;
-  private limit: number = 0;
-  private name?: string = "";
-  private hasMoreToLoad: boolean = true;
-  private hasMoreToSearch: boolean = true;
-  private gravesList: Grave[] = [];
-  private searchList: Grave[] = [];
+export class ListsLoader<T extends { _id: string }> {
+  pagination: PaginationParams;
+  queries: QueryParams;
+  list: T[] = [];
+  hasMore: boolean = true;
   isEmpty?: boolean;
   isLoading: boolean = false;
   isError: boolean = false;
   error?: Error;
-  private graveStore: GraveStore;
 
-  constructor(graveStore: GraveStore) {
-    makeAutoObservable(this, GetGravesModelProps);
-    this.graveStore = graveStore;
+  constructor(pagination: PaginationParams, queries: QueryParams) {
+    this.pagination = pagination;
+    this.queries = queries;
   }
 
-  private async loadGraves() {
-    if (!this.hasMoreToLoad) {
-      return console.warn("There is no more graves.");
+  async loader(client: () => Promise<any>) {
+    if (!this.hasMore) {
+      return console.warn("There is no more items.");
     }
-    if (this.gravesList.length < 1) {
-      this.setFirstPage();
+    if (this.list.length < 1) {
+      this.pagination.setFirstPage();
     }
-    try {
-      this.setLoadingStart();
-      const data = await client(
-        `${ORIGIN}${API_V1_GRAVES}/paginate?page=${this.page}&limit=${this.limit}`
-      );
-      const newGraves = this.strip(data);
-      const uniqueGraves = this.returnUniqueEntries([
-        ...this.gravesList,
-        ...newGraves,
-      ]);
-      this.setEmptiness(!!!uniqueGraves.length);
-      this.hasMoreToLoad = data.has_more;
-      this.gravesList = uniqueGraves;
-      this.graveStore.setGravesList(this.gravesList);
-    } catch (e) {
-      this.setError(e);
-    } finally {
-      this.setLoadingFinish();
-    }
+    debounce(async () => {
+      try {
+        this.setLoadingStart();
+        const data = await client();
+        const newItems = this.strip(data);
+        const uniqueItems = this.returnUniqueEntries([
+          ...this.list,
+          ...newItems,
+        ]);
+        this.setEmptiness(!!!uniqueItems.length);
+        this.setHasMore(data.has_more);
+        this.setList(uniqueItems);
+        if (newItems.length > 0) {
+          this.pagination.setNextPage();
+        }
+      } catch (e) {
+        this.setError(e);
+      } finally {
+        this.setLoadingFinish();
+      }
+    }, 300);
   }
 
-  private async searchGraves() {
-    if (!this.hasMoreToSearch) {
-      return console.warn("There is no more graves for search!");
-    }
-    if (this.searchList.length < 1) {
-      this.setFirstPage();
-    }
-    try {
-      this.setLoadingStart();
-      const data = await client(
-        `${ORIGIN}${API_V1_GRAVES}/paginate?page=${this.page}&limit=${this.limit}&name=${this.name}`
-      );
-      const foundGraves = this.strip(data);
-      const uniqueGraves = this.returnUniqueEntries([
-        ...this.searchList,
-        ...foundGraves,
-      ]);
-      this.hasMoreToSearch = data.has_more;
-      this.searchList = uniqueGraves;
-      this.graveStore.setSearchList(this.searchList);
-    } catch (e) {
-      this.setError(e);
-    } finally {
-      this.setLoadingFinish();
-    }
+  setList(list: T[]) {
+    this.list = list;
   }
 
-  private returnUniqueEntries(arr: Grave[]): Grave[] {
+  setHasMore(isMore: boolean) {
+    this.hasMore = isMore;
+  }
+
+  private returnUniqueEntries(arr: T[]): T[] {
     return arr.filter(
       (value, index, self) =>
         index === self.findIndex((t) => t._id === value._id)
@@ -126,61 +89,10 @@ export class GetGravesModel {
     this.isEmpty = isEmpty;
   }
 
-  private emptyGravesList(): void {
-    this.gravesList = [];
-  }
-
-  private emptySearchList(): void {
-    this.searchList = [];
-  }
-
-  private setThereIsMore(what: "toLoad" | "toSearch"): void {
-    if (what === "toLoad") {
-      this.hasMoreToLoad = true;
-    }
-    if (what === "toSearch") {
-      this.hasMoreToSearch = true;
-    }
-  }
-
-  setNextPage(): void {
-    this.page += 1;
-    this.getGraves({ name: this.name });
-  }
-
-  async getGraves(props: { name?: string }): Promise<void> {
-    const { name } = props;
-    this.name = name;
-    const searchMode = !!this.name;
-
-    debounce(async () => {
-      if (searchMode) {
-        this.emptyGravesList();
-        this.setThereIsMore("toLoad");
-        await this.searchGraves();
-      } else {
-        this.emptySearchList();
-        this.setThereIsMore("toSearch");
-        await this.loadGraves();
-      }
-    }, 300);
-  }
-
   async reload(): Promise<void> {
-    this.setFirstPage();
-    this.setThereIsMore("toLoad");
-    this.setThereIsMore("toSearch");
-    await this.getGraves({});
-  }
-
-  setFirstPage(): void {
-    this.page = 1;
-  }
-
-  setLimit(limit: number): void {
-    if (this.limit === limit) return;
-    this.limit = limit;
-    this.getGraves({ name: this.name });
+    this.pagination.setFirstPage();
+    this.setList([]);
+    this.setHasMore(true);
   }
 
   private setLoadingStart(): void {
@@ -196,7 +108,7 @@ export class GetGravesModel {
     this.error = e;
   }
 
-  private strip(data: any): Array<Grave> {
+  private strip(data: any): Array<any> {
     if (data?.graves) data = data.graves;
     return data;
   }

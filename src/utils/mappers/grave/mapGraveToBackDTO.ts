@@ -10,7 +10,6 @@ export const mapGraveToBackDTO = (grave: PostGraveFormData) => {
     died: new Date(grave.died).toISOString(),
     gifts: [],
     chatLogs: [],
-    graveCellNum: Math.round(Math.random() * 100),
     lastWords: grave.lastWords,
     photos: grave.photos,
     name: grave.name,

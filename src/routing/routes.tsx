@@ -22,8 +22,8 @@ export const Routes = () => {
       </Route>
       <Route path={`${routes.graves.root}`} exact>
         <GravesListWithSearch>
-          {(listOf: GraveFeedProps) => {
-            return <GraveFeed graves={listOf.graves} />;
+          {(api) => {
+            return <GraveFeed api={api} />;
           }}
         </GravesListWithSearch>
       </Route>
