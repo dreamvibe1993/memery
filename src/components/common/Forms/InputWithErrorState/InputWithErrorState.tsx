@@ -31,7 +31,7 @@ export const InputWithErrorState = (props: InputWithErrorStateProps) => {
   } = props;
   return (
     <FormControl isInvalid={isInvalid} isRequired={isRequired}>
-      {label && <FormLabel htmlFor="name">{label}</FormLabel>}
+      {label && <FormLabel htmlFor={name}>{label}</FormLabel>}
       <Input
         placeholder={placeholder}
         type={type}

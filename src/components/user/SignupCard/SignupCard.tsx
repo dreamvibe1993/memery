@@ -13,9 +13,9 @@ import { Link, Redirect, useHistory } from "react-router-dom";
 import { routes } from "../../../configs/urls/app/app-urls";
 import { regSchema } from "../../../models/yup/yup-schemas";
 import { useRegisterUser } from "../../../utils/hooks/users/useRegisterUser";
-import { InputWithErrorState } from "../Forms/InputWithErrorState/InputWithErrorState";
 import userStore from "../../../store/mobx/users/users";
 import { observer } from "mobx-react-lite";
+import { InputWithErrorState } from "../../common/Forms/InputWithErrorState/InputWithErrorState";
 
 export const SignupCard = observer(() => {
   const { register } = useRegisterUser();

@@ -1,12 +1,12 @@
 import { Center } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
 import { HEADER_HEIGHT } from "../../components/common/Header/Header";
-import { SignupCard } from "../../components/user/SignupCard/SignupCard";
+import { PassChangeCard } from "../../components/user/PassChangeCard/PassChangeCard";
 
-export const Registration = observer(() => {
+export const PasswordChange = observer(() => {
   return (
     <Center h={`calc(100vh - ${HEADER_HEIGHT}px)`}>
-      <SignupCard />
+      <PassChangeCard />
     </Center>
   );
 });

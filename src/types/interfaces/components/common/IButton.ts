@@ -1,4 +1,7 @@
+import { ButtonProps } from "@chakra-ui/react";
+
 export interface IButton {
-  onClick: () => void;
+  onClick?: () => void;
   title?: string;
+  type?: ButtonProps['type'];
 }

@@ -8,6 +8,7 @@ import { UserCreds } from "../../../types/User";
 import userStore from "../../../store/mobx/users/users";
 import { useToast } from "@chakra-ui/react";
 import { returnSuccessToast } from "../../mappers/toasts/returnSuccessToast";
+import { returnErrorToast } from "../../mappers/toasts/returnErrorToast";
 
 export const useLoginUser = () => {
   const toast = useToast();
@@ -31,7 +32,7 @@ export const useLoginUser = () => {
       setLoggedIn(true);
       toast(returnSuccessToast(`Здравствуйте, ${response.data.user.name}! 💓`));
     } catch (e) {
-      handleError(e);
+      toast(returnErrorToast(`Либо почта, либо пароль неправильные! 🍅`));
     } finally {
       closeGlobalPreloader();
     }

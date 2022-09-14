@@ -13,7 +13,7 @@ import { IButton } from "../../../../types/interfaces/components/common/IButton"
 
 export type CommonModalProps = {
   isOpen: boolean;
-  confirmButton?: IButton;
+  confirmButton?: IButton & { form?: string };
   cancelButton?: IButton;
   title: string;
   children: ReactNode;
@@ -21,7 +21,6 @@ export type CommonModalProps = {
   onClose: () => void;
 };
 
-//TODO: отменить реквест в клиенте на нажатие по отмене
 export const CommonModal = (props: CommonModalProps) => {
   const {
     isOpen,
@@ -46,12 +45,18 @@ export const CommonModal = (props: CommonModalProps) => {
               onClick={confirmButton.onClick}
               isLoading={isLoading}
               mr={2}
+              type={confirmButton.type || "button"}
+              form={confirmButton.form}
             >
               {confirmButton.title || "Отправить"}
             </Button>
           )}
           {cancelButton && (
-            <Button onClick={cancelButton.onClick} isLoading={isLoading}>
+            <Button
+              onClick={cancelButton.onClick}
+              isLoading={isLoading}
+              type={cancelButton.type || "button"}
+            >
               {cancelButton.title || "Отмена"}
             </Button>
           )}

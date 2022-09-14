@@ -24,8 +24,11 @@ export const routes = {
   myProfile: {
     root: "/my-profile",
   },
+  forgotPassword: {
+    root: "/forgot-password",
+  },
   passwordChange: {
-    root: "/passwordChange",
+    root: "/passwordChange"
   },
   about: {
     root: "/about",

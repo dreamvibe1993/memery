@@ -66,7 +66,6 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
     }
   };
 
-  //TODO: общий лоудер через портал
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);

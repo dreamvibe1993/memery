@@ -7,6 +7,7 @@ import { routes } from "../configs/urls/app/app-urls";
 import { Login } from "../pages/Login/Login";
 import { MainPage } from "../pages/MainPage/MainPage";
 import { Registration } from "../pages/Registration/Registration";
+import { PasswordChange } from "../pages/PasswordChange/PasswordChange";
 
 export const Routes = () => {
   return (
@@ -29,6 +30,9 @@ export const Routes = () => {
       </Route>
       <Route path={routes.registration.root} exact>
         <Registration />
+      </Route>
+      <Route path={routes.passwordChange.root} exact>
+        <PasswordChange />
       </Route>
       <Route path="*">
         <NotFoundPage />

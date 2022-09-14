@@ -11,6 +11,10 @@ import { DrawerLeft } from "./components/common/Drawer/Drawer";
 import { DrawerLinksList } from "./components/common/Drawer/DrawerLinksList/DrawerLinksList";
 import { AuthWrapper } from "./components/hocs/AuthWrapper/AuthWrapper";
 
+//TODO: отменить реквест в клиенте на нажатие по отмене
+//TODO: хендл ошибок в разных местах, хендл кодов
+
+
 function App() {
   const DrawerContext = useDrawerContext();
   const CommonPreloaderContext = useCommonLoaderContext();

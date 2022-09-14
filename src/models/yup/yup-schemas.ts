@@ -3,9 +3,7 @@ import * as yup from "yup";
 //сообщения писать в required
 
 export const graveSchema = yup.object().shape({
-  photos: yup
-    .array()
-    .max(4, "Please delete some pictures. Max number is 4."),
+  photos: yup.array().max(4, "Please delete some pictures. Max number is 4."),
   lastWords: yup
     .string()
     .max(
@@ -62,15 +60,19 @@ export const profileSchema = yup.object().shape({
     .max(20, "Maximum name's length is 20 symbols."),
 });
 
+export const forgotPassSchema = yup.object().shape({
+  email: yup.string().email().required("Email is strongly required"),
+});
+
 export const passChangeSchema = yup.object().shape({
-  newPassword: yup
+  password: yup
     .string()
     .required("Password is strongly required!")
     .min(8, "Minimum password's length is 8 symbols.")
-    .oneOf([yup.ref("newPasswordConfirm"), null], "Passwords must match"),
-  newPasswordConfirm: yup
+    .oneOf([yup.ref("passwordConfirm"), null], "Passwords must match"),
+  passwordConfirm: yup
     .string()
     .required("Please confirm your password")
     .min(8, "Minimum password's length is 8 symbols.")
-    .oneOf([yup.ref("newPassword"), null], "Passwords must match"),
+    .oneOf([yup.ref("password"), null], "Passwords must match"),
 });
