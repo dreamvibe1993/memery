@@ -43,12 +43,17 @@ export const Alert = (props: CommonModalProps) => {
                 ref={cancelRef}
                 onClick={cancelButton.onClick}
                 isLoading={isLoading}
+                colorScheme={cancelButton.colorScheme}
               >
                 {cancelButton.title}
               </Button>
             )}
             {confirmButton && (
-              <Button colorScheme="red" onClick={confirmButton.onClick} ml={3}>
+              <Button
+                ml={3}
+                onClick={confirmButton.onClick}
+                colorScheme={confirmButton.colorScheme || "red"}
+              >
                 {confirmButton.title}
               </Button>
             )}

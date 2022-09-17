@@ -47,6 +47,7 @@ export const CommonModal = (props: CommonModalProps) => {
               mr={2}
               type={confirmButton.type || "button"}
               form={confirmButton.form}
+              colorScheme={confirmButton.colorScheme}
             >
               {confirmButton.title || "Отправить"}
             </Button>
@@ -56,6 +57,7 @@ export const CommonModal = (props: CommonModalProps) => {
               onClick={cancelButton.onClick}
               isLoading={isLoading}
               type={cancelButton.type || "button"}
+              colorScheme={cancelButton.colorScheme}
             >
               {cancelButton.title || "Отмена"}
             </Button>

@@ -10,26 +10,33 @@ import {
   Textarea,
   TransformProps,
   useDisclosure,
+  Input,
 } from "@chakra-ui/react";
-import { ReactNode, useState } from "react";
+import { observer } from "mobx-react-lite";
+import { ChangeEvent, ReactNode, useState } from "react";
 import { AiOutlineGift } from "react-icons/ai";
 import { BiExit, BiMessageRoundedEdit, BiTrash } from "react-icons/bi";
 import { useHistory } from "react-router-dom";
 import ImageViewer from "react-simple-image-viewer";
+import { routes } from "../../../../configs/urls/app/app-urls";
+import { UserProfile } from "../../../../store/mobx/users/classes/UserProfile/UserProfile";
+import { Grave } from "../../../../types/Grave";
+import { UserRoles } from "../../../../types/User";
+import { useDeleteGrave } from "../../../../utils/hooks/graves/useDeleteGrave/useDeleteGrave";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
-import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
-import { HEADER_HEIGHT } from "../../../common/Header/Header";
-import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
-import { UserRoles } from "../../../../types/User";
 import { useReturnUserStore } from "../../../../utils/hooks/mobx/users/useReturnUserStore";
-import { observer } from "mobx-react-lite";
-import { useDeleteGrave } from "../../../../utils/hooks/graves/useDeleteGrave/useDeleteGrave";
+import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
+import { EditableField } from "../../../common/EditableField/EditableField";
+import { HEADER_HEIGHT } from "../../../common/Header/Header";
 import { Alert } from "../../../common/Modal/Alert/Alert";
+import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
+import { format } from "date-fns";
+import { BsFillCalendarDateFill } from "react-icons/bs";
 
 export const GraveProfile = observer((props: useGetGraveReturnType) => {
   const { grave, refreshGrave } = props;
-  const { updateGraveMessages } = useUpdateGrave();
+  const { updateGraveMessages, updateGrave } = useUpdateGrave();
   const { deleteGrave } = useDeleteGrave();
   const { user } = useReturnUserStore();
 
@@ -49,6 +56,18 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     isOpen: isDeleteModalOpen,
     onOpen: openDeleteModal,
     onClose: closeDeleteModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditBornModalOpen,
+    onOpen: openEditBornModal,
+    onClose: closeEditBornModal,
+  } = useDisclosure();
+
+  const {
+    isOpen: isEditDiedModalOpen,
+    onOpen: openEditDiedModal,
+    onClose: closeEditDiedModal,
   } = useDisclosure();
 
   const history = useHistory();
@@ -80,10 +99,42 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     }
   };
 
+  const changeBornDate = async (date: string) => {
+    if (!grave) return console.error("No grave to change date on!");
+    await updateGrave({ born: date, _id: grave?._id });
+    grave.born = date;
+    closeEditBornModal();
+  };
+
+  const changeDiedDate = async (date: string) => {
+    if (!grave) return console.error("No grave to change date on!");
+    await updateGrave({ died: date, _id: grave?._id });
+    grave.died = date;
+    closeEditDiedModal();
+  };
+
   if (!grave) return null;
 
   return (
     <>
+      {isEditBornModalOpen && (
+        <EditDate
+          isOpen={isEditBornModalOpen}
+          onCancel={closeEditBornModal}
+          onConfirm={(date) => changeBornDate(date)}
+          dateDefault={grave.born}
+          type="born"
+        />
+      )}
+      {isEditDiedModalOpen && (
+        <EditDate
+          isOpen={isEditDiedModalOpen}
+          onCancel={closeEditDiedModal}
+          onConfirm={(date) => changeDiedDate(date)}
+          dateDefault={grave.died}
+          type="died"
+        />
+      )}
       <Alert
         isLoading={isDeleteModalLoading}
         isOpen={isDeleteModalOpen}
@@ -113,6 +164,7 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
           maxLength={100}
         />
       </CommonModal>
+
       <Grid
         gridTemplateRows={"auto 290px 10% 40%"}
         gridTemplateColumns={"20% 60% 20%"}
@@ -126,7 +178,15 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
         w="100%"
       >
         <GridItem area="head">
-          <Heading>{grave.name}</Heading>
+          <EditableField
+            as={Heading}
+            Component={() => <Heading>{grave.name}</Heading>}
+            defaultValue={grave.name}
+            keyToUpdate="name"
+            onUpdate={async (args) => updateGrave({ ...args, _id: grave._id })}
+            validationFunction={() => canUserEdit(grave, user)}
+            input={{ type: "text" }}
+          />
         </GridItem>
         <GridItem
           area="close"
@@ -135,7 +195,7 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
           justifyContent="flex-end"
         >
           <SvgWrapper transform="rotate(180deg)">
-            <BiExit onClick={() => history.push("/")} />
+            <BiExit onClick={() => history.push(routes.graves.root)} />
           </SvgWrapper>
         </GridItem>
         <GridItem
@@ -169,10 +229,20 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
             gridTemplateColumns="100%"
           >
             <GridItem area="header" textAlign="center">
-              <Text variant="caption">
+              <Text
+                variant="caption"
+                onClick={
+                  canUserEdit(grave, user) ? openEditBornModal : () => {}
+                }
+              >
                 Родился: {mapDateTo("DDMMYYYY", grave.born)}
               </Text>
-              <Text variant="caption">
+              <Text
+                variant="caption"
+                onClick={
+                  canUserEdit(grave, user) ? openEditDiedModal : () => {}
+                }
+              >
                 Смерть: {mapDateTo("DDMMYYYY", grave.died)}
               </Text>
             </GridItem>
@@ -203,7 +273,15 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
         <GridItem area={"cell4"}></GridItem>
         <GridItem area={"cell5"} pt={5}>
           <Text variant="caption">Последние слова: </Text>
-          <Text>{grave?.lastWords}</Text>
+          <EditableField
+            as={Text}
+            Component={() => <Text>{grave?.lastWords}</Text>}
+            defaultValue={grave?.lastWords}
+            keyToUpdate="lastWords"
+            onUpdate={async (args) => updateGrave({ ...args, _id: grave._id })}
+            validationFunction={() => canUserEdit(grave, user)}
+            textarea={{}}
+          />
         </GridItem>
         <GridItem area={"cell6"}></GridItem>
 
@@ -233,6 +311,68 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     </>
   );
 });
+
+type EditDateProps = {
+  isOpen: boolean;
+  onCancel: () => void;
+  onConfirm: (date: string) => void;
+  dateDefault: string;
+  type: "born" | "died";
+};
+
+const EditDate = (props: EditDateProps) => {
+  const { isOpen, onCancel, onConfirm, dateDefault, type } = props;
+  const [date, setDate] = useState(dateDefault);
+
+  const changeDate = (e: ChangeEvent<HTMLInputElement>) => {
+    setDate(new Date(e.target.value).toISOString());
+  };
+
+  const formattedDate = format(new Date(date), "yyyy-MM-dd");
+  const formattedDate2 = format(new Date(date), "dd/MM/yyyy");
+
+  const dict = {
+    born: "рождения",
+    died: "смерти",
+  };
+
+  return (
+    <CommonModal
+      isOpen={isOpen}
+      confirmButton={{
+        onClick: () => onConfirm(date),
+      }}
+      cancelButton={{
+        onClick: onCancel,
+      }}
+      onClose={onCancel}
+      title={`Изменить дату ${dict[type]}`}
+    >
+      <Box pos="relative">
+        <Input
+          type="text"
+          pointerEvents="none"
+          value={formattedDate2}
+          readOnly
+          pos="absolute"
+          width="100%"
+        />
+        <Box pos={"absolute"} right="15px" top="50%" transform="translateY(-50%)">
+          <BsFillCalendarDateFill />
+        </Box>
+        <Input
+          type="date"
+          value={formattedDate}
+          onChange={changeDate}
+          opacity={0}
+        />
+      </Box>
+    </CommonModal>
+  );
+};
+
+const canUserEdit = (grave: Grave, user?: UserProfile) =>
+  user?.role === UserRoles.admin || user?._id === grave.madeBy.id;
 
 const SvgWrapper = (props: { children: ReactNode } & TransformProps) => {
   const { children } = props;

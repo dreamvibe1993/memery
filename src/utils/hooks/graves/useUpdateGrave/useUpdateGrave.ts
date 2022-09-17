@@ -45,7 +45,24 @@ export const useUpdateGrave = () => {
     }
   };
 
-  return { updateGraveMessages, updateGraveGifts };
+  const updateGrave = async (grave: Partial<Grave>) => {
+    try {
+      const result = await axios.patch(
+        `${ORIGIN}${API_V1_GRAVES}/${grave._id}`,
+        grave,
+        {
+          withCredentials: true,
+        }
+      );
+      toast(returnSuccessToast("Могила обновлена! 🐸"));
+      return result;
+    } catch (e: any) {
+      console.error(e);
+      toast(returnErrorToast(e.message));
+    }
+  };
+
+  return { updateGraveMessages, updateGraveGifts, updateGrave };
 };
 
 // убрать ненужные деструктуризации?
