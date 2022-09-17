@@ -18,14 +18,14 @@ import { routes } from "../../../configs/urls/app/app-urls";
 import { loginSchema } from "../../../models/yup/yup-schemas";
 import { useLoginUser } from "../../../utils/hooks/users/useLoginUser";
 import { InputWithErrorState } from "../../common/Forms/InputWithErrorState/InputWithErrorState";
-import userStore from "../../../store/mobx/users/users";
 import { HEADER_HEIGHT } from "../../common/Header/Header";
 import { observer } from "mobx-react-lite";
 import { ForgotPassword } from "../ForgotPassword/ForgotPassword";
+import { useReturnUserStore } from "../../../utils/hooks/mobx/users/useReturnUserStore";
 
 export const SigninCard = observer(() => {
   const { login, logout } = useLoginUser();
-  const { isLoggedIn, user } = userStore;
+  const { isLoggedIn, user } = useReturnUserStore();
   const forgotPasswordModalUtils = useDisclosure();
 
   const formik = useFormik({

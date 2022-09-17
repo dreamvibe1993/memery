@@ -4,8 +4,8 @@ import { observer } from "mobx-react-lite";
 import React, { UIEventHandler, useEffect, useRef } from "react";
 import { useErrorHandler } from "react-error-boundary";
 import styled from "styled-components";
-import graveStore from "../../../store/mobx/graves/graves";
 import { Grave } from "../../../types/Grave";
+import { useReturnGraveStore } from "../../../utils/hooks/mobx/graves/useReturnGraveStore";
 import { GravesApis } from "../../hocs/GravesListWithSearch/GravesListWithSearch";
 import { ListLayout } from "../../layouts/ListLayout/ListLayout";
 import { GraveFeedItem } from "../GraveFeedItem/GraveFeedItem";
@@ -17,7 +17,7 @@ export const GraveFeed: React.FC<GraveFeedProps> = observer(
     const ListContainerRef = useRef<HTMLDivElement | null>(null);
     const handleError = useErrorHandler();
     const { api } = props;
-    const { pagination } = graveStore;
+    const { pagination } = useReturnGraveStore();
 
     useEffect(() => {
       if (api.isError) {

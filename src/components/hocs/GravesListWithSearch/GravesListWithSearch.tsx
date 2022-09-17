@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { HiOutlinePlus } from "react-icons/hi";
 import { Loader } from "../../../store/mobx/graves/classes/Loader/Loader";
 import { Searcher } from "../../../store/mobx/graves/classes/Searcher/Searcher";
-import graveStore from "../../../store/mobx/graves/graves";
+import { useReturnGraveStore } from "../../../utils/hooks/mobx/graves/useReturnGraveStore";
 import { AddGraveForm } from "../../forms/AddGraveForm/AddGraveForm";
 import { DrawerLayout } from "../../layouts/DrawerLayout/DrawerLayout";
 import { ListLayout } from "../../layouts/ListLayout/ListLayout";
@@ -20,7 +20,7 @@ export const GravesListWithSearch = observer(
     const { children } = props;
 
     const { isOpen, onOpen, onClose } = useDisclosure();
-    const { loader, searcher, queries } = graveStore;
+    const { loader, searcher, queries } = useReturnGraveStore();
 
     const [gravesApi, setGravesApi] = useState<GravesApis>(loader);
 

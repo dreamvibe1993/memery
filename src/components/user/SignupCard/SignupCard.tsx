@@ -1,26 +1,26 @@
 import {
-  Flex,
   Box,
-  Stack,
   Button,
+  Flex,
   Heading,
+  Link as ChakraLink,
+  Stack,
   Text,
   useColorModeValue,
-  Link as ChakraLink,
 } from "@chakra-ui/react";
 import { useFormik } from "formik";
+import { observer } from "mobx-react-lite";
 import { Link, Redirect, useHistory } from "react-router-dom";
 import { routes } from "../../../configs/urls/app/app-urls";
 import { regSchema } from "../../../models/yup/yup-schemas";
+import { useReturnUserStore } from "../../../utils/hooks/mobx/users/useReturnUserStore";
 import { useRegisterUser } from "../../../utils/hooks/users/useRegisterUser";
-import userStore from "../../../store/mobx/users/users";
-import { observer } from "mobx-react-lite";
 import { InputWithErrorState } from "../../common/Forms/InputWithErrorState/InputWithErrorState";
 
 export const SignupCard = observer(() => {
   const { register } = useRegisterUser();
   const history = useHistory();
-  const { isLoggedIn } = userStore;
+  const { isLoggedIn } = useReturnUserStore();
 
   const formik = useFormik({
     initialValues: {

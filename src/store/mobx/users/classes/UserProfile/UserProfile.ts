@@ -1,4 +1,8 @@
-import { IUserProfile, UserContact } from "../../../../../types/User";
+import {
+  IUserProfile,
+  UserContact,
+  UserRoles,
+} from "../../../../../types/User";
 
 export class UserProfile implements IUserProfile {
   photos: string[];
@@ -8,6 +12,7 @@ export class UserProfile implements IUserProfile {
   colorTheme: string;
   name?: string | undefined;
   email: string;
+  role: UserRoles;
 
   constructor(user: IUserProfile) {
     this.photos = user.photos;
@@ -17,5 +22,6 @@ export class UserProfile implements IUserProfile {
     this.colorTheme = user.colorTheme;
     this.name = user.name;
     this.email = user.email;
+    this.role = user.role;
   }
 }

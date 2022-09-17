@@ -13,8 +13,7 @@ import {
 } from "@chakra-ui/react";
 import { ReactNode, useState } from "react";
 import { AiOutlineGift } from "react-icons/ai";
-import { BiExit, BiMessageRoundedEdit } from "react-icons/bi";
-import { FaDonate } from "react-icons/fa";
+import { BiExit, BiMessageRoundedEdit, BiTrash } from "react-icons/bi";
 import { useHistory } from "react-router-dom";
 import ImageViewer from "react-simple-image-viewer";
 import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
@@ -22,20 +21,36 @@ import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/us
 import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
 import { HEADER_HEIGHT } from "../../../common/Header/Header";
 import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
+import { UserRoles } from "../../../../types/User";
+import { useReturnUserStore } from "../../../../utils/hooks/mobx/users/useReturnUserStore";
+import { observer } from "mobx-react-lite";
+import { useDeleteGrave } from "../../../../utils/hooks/graves/useDeleteGrave/useDeleteGrave";
+import { Alert } from "../../../common/Modal/Alert/Alert";
 
-export const GraveProfile = (props: useGetGraveReturnType) => {
+export const GraveProfile = observer((props: useGetGraveReturnType) => {
   const { grave, refreshGrave } = props;
   const { updateGraveMessages } = useUpdateGrave();
+  const { deleteGrave } = useDeleteGrave();
+  const { user } = useReturnUserStore();
+
   const {
     isOpen: isMessageModalOpen,
     onOpen: onMessageModalOpen,
     onClose: onMessageModalClose,
   } = useDisclosure();
+
   const {
     isOpen: isPhotoGalleryOpen,
     onOpen: openPhotoGallery,
     onClose: closePhotoGallery,
   } = useDisclosure();
+
+  const {
+    isOpen: isDeleteModalOpen,
+    onOpen: openDeleteModal,
+    onClose: closeDeleteModal,
+  } = useDisclosure();
+
   const history = useHistory();
 
   const [message, setMessage] = useState<string>();
@@ -53,10 +68,32 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
     onMessageModalClose();
   };
 
+  const [isDeleteModalLoading, setDeleteModalLoading] = useState(false);
+  const deleteThisGrave = async () => {
+    if (!grave) return console.error("No grave to delete");
+    try {
+      setDeleteModalLoading(true);
+      await deleteGrave(grave);
+    } finally {
+      closeDeleteModal();
+      setDeleteModalLoading(false);
+    }
+  };
+
   if (!grave) return null;
 
   return (
     <>
+      <Alert
+        isLoading={isDeleteModalLoading}
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        cancelButton={{ title: "Отмена", onClick: closeDeleteModal }}
+        confirmButton={{ title: "Удалить", onClick: deleteThisGrave }}
+        title="Удалить"
+      >
+        <Text>Вы уверены, что хотите удалить могилу {grave.name}?</Text>
+      </Alert>
       <CommonModal
         isOpen={isMessageModalOpen}
         confirmButton={{
@@ -109,11 +146,14 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
           alignItems="center"
           pt="40px"
         >
+          {(user?._id === grave.madeBy.id ||
+            user?.role === UserRoles.admin) && (
+            <SvgWrapper>
+              <BiTrash onClick={openDeleteModal} />
+            </SvgWrapper>
+          )}
           <SvgWrapper>
             <AiOutlineGift />
-          </SvgWrapper>
-          <SvgWrapper>
-            <FaDonate />
           </SvgWrapper>
           <SvgWrapper>
             <BiMessageRoundedEdit onClick={onMessageModalOpen} />
@@ -192,7 +232,7 @@ export const GraveProfile = (props: useGetGraveReturnType) => {
       </Grid>
     </>
   );
-};
+});
 
 const SvgWrapper = (props: { children: ReactNode } & TransformProps) => {
   const { children } = props;

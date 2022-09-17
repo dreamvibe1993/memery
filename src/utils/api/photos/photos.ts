@@ -11,7 +11,7 @@ export const updatePhotos = async (
   });
   return await axios
     .post(url, formData, {
-    //   withCredentials: true,
+      withCredentials: true,
       headers: { "Content-type": "multipart/form-data" },
     })
     .catch((e) => {

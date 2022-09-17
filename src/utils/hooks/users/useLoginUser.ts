@@ -9,6 +9,7 @@ import userStore from "../../../store/mobx/users/users";
 import { useToast } from "@chakra-ui/react";
 import { returnSuccessToast } from "../../mappers/toasts/returnSuccessToast";
 import { returnErrorToast } from "../../mappers/toasts/returnErrorToast";
+import { useReturnUserStore } from "../mobx/users/useReturnUserStore";
 
 export const useLoginUser = () => {
   const toast = useToast();
@@ -16,7 +17,7 @@ export const useLoginUser = () => {
   const { onOpen: openGlobalPreloader, onClose: closeGlobalPreloader } =
     useContext(CommonLoaderContext);
 
-  const { setLoggedIn, setUser, flushUser } = userStore;
+  const { setLoggedIn, setUser, flushUser } = useReturnUserStore();
 
   const login = async (creds: UserCreds) => {
     try {

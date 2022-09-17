@@ -8,18 +8,24 @@ export type UserCreds = {
   email: string;
   password?: string;
   passwordConfirm?: string;
-}
+};
 
 export type UserContact = {
-  platform: string,
-  link: string,
-  active: boolean
+  platform: string;
+  link: string;
+  active: boolean;
+};
+
+export enum UserRoles {
+  admin = "admin",
+  user = "user",
 }
 
 export interface IUserProfile extends UserCreds {
-  photos: string[]
-  _id: string,
-  contacts: UserContact[],
-  gender: number[],
-  colorTheme: string
+  photos: string[];
+  _id: string;
+  contacts: UserContact[];
+  gender: number[];
+  colorTheme: string;
+  role: UserRoles;
 }

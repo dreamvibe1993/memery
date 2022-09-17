@@ -12,13 +12,13 @@ import { observer } from "mobx-react-lite";
 import { Redirect, useHistory } from "react-router-dom";
 import { routes } from "../../../configs/urls/app/app-urls";
 import { passChangeSchema } from "../../../models/yup/yup-schemas";
-import userStore from "../../../store/mobx/users/users";
 import { useQuery } from "../../../utils/hooks/common/useQuery";
+import { useReturnUserStore } from "../../../utils/hooks/mobx/users/useReturnUserStore";
 import { useUpdateUser } from "../../../utils/hooks/users/useUpdateUser";
 import { InputWithErrorState } from "../../common/Forms/InputWithErrorState/InputWithErrorState";
 
 export const PassChangeCard = observer(() => {
-  const { isLoggedIn } = userStore;
+  const { isLoggedIn } = useReturnUserStore();
   const queryParams = useQuery();
   const token = queryParams.get("token");
   const { submitNewPassword } = useUpdateUser();

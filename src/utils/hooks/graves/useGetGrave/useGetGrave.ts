@@ -1,11 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import { API_V1_GRAVES } from "../../../../configs/urls/api/api-urls";
-import { ORIGIN } from "../../../../configs/urls/app/app-urls";
+import { ORIGIN, routes } from "../../../../configs/urls/app/app-urls";
 import { Grave } from "../../../../types/Grave";
 import { client } from "../../../api/client/client";
 import debounce from "../../../optimization/debouncer/debouncer";
-import { useErrorHandler } from "react-error-boundary";
+import { useToast } from "@chakra-ui/react";
+import { returnErrorToast } from "../../../mappers/toasts/returnErrorToast";
 
 export type useGetGraveReturnType = {
   grave: Grave | undefined;
@@ -16,7 +17,8 @@ export type useGetGraveReturnType = {
 
 export const useGetGrave = () => {
   const params = useParams<{ id: string }>();
-  const handleError = useErrorHandler();
+  const toast = useToast();
+  const history = useHistory();
 
   const [grave, setGrave] = useState<Grave>();
   const [error, setError] = useState<Error>();
@@ -30,7 +32,8 @@ export const useGetGrave = () => {
         .catch((e) => {
           console.error(e);
           setError(e);
-          handleError(e);
+          toast(returnErrorToast("Могилы не найдено..."));
+          history.push(routes.graves.root);
         });
     });
   }, [params.id]);
