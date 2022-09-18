@@ -8,6 +8,7 @@ import {
   API_V1_PHOTOS,
 } from "../../../../configs/urls/api/api-urls";
 import { ORIGIN, routes } from "../../../../configs/urls/app/app-urls";
+import { Photo } from "../../../../types/Photo";
 import { updatePhotos } from "../../../api/photos/photos";
 import { FileExtended } from "../../../comperssors/photos/compressPhotos";
 import { mapGraveToBackDTO } from "../../../mappers/grave/mapGraveToBackDTO";
@@ -23,7 +24,7 @@ export type PostGraveFormData = {
 };
 
 export type UsePostGraveType = {
-  postNewGrave: (data: PostGraveFormData) => void;
+  postNewGrave: (data: PostGraveFormData) => Promise<any>;
   isLoading: boolean;
 };
 
@@ -42,9 +43,9 @@ export const usePostGrave = (): UsePostGraveType => {
         history.push(routes.login.root);
         return;
       }
-      data.photos = res.data.photos.map((photoUrl: string, index: number) => {
+      data.photos = res.data.photos.map((photo: Photo, index: number) => {
         return {
-          url: photoUrl,
+          url: photo.url,
           isAvatar: index === 0,
         };
       });
@@ -57,6 +58,7 @@ export const usePostGrave = (): UsePostGraveType => {
         }
       );
       toast(returnSuccessToast("Могила успешно создана!"));
+
       return response;
     } catch (e) {
       console.error(e);

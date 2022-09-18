@@ -23,10 +23,11 @@ type PhotoAlbumProps = {
     newPhotosFiles: FileExtended[],
     oldPhotosUrls: Photo[]
   ) => Promise<void>;
+  canUserEdit: boolean;
 };
 
 export const PhotoAlbum = observer((props: PhotoAlbumProps) => {
-  const { photos: alreadyUploadedPhotosUrls, onSave } = props;
+  const { photos: alreadyUploadedPhotosUrls, onSave, canUserEdit } = props;
   const {
     addPhotosFiles,
     setUploadedPhotosUrls,
@@ -98,8 +99,12 @@ export const PhotoAlbum = observer((props: PhotoAlbumProps) => {
         })}
       </Grid>
       <VStack mt={5}>
-        <Center in={chosenPhotosUrls.length > 0} as={Fade} w="100%">
-          {chosenPhotosUrls.length > 0 && (
+        <Center
+          in={chosenPhotosUrls.length > 0 && canUserEdit}
+          as={Fade}
+          w="100%"
+        >
+          {chosenPhotosUrls.length > 0 && canUserEdit && (
             <Button
               w="100%"
               colorScheme="red"
@@ -109,8 +114,12 @@ export const PhotoAlbum = observer((props: PhotoAlbumProps) => {
             </Button>
           )}
         </Center>
-        <Center in={chosenPhotosUrls.length === 1} as={Fade} w="100%">
-          {chosenPhotosUrls.length === 1 && (
+        <Center
+          in={chosenPhotosUrls.length === 1 && canUserEdit}
+          as={Fade}
+          w="100%"
+        >
+          {chosenPhotosUrls.length === 1 && canUserEdit && (
             <Button
               w="100%"
               disabled={chosenPhotosUrls[0].isAvatar}
@@ -120,24 +129,27 @@ export const PhotoAlbum = observer((props: PhotoAlbumProps) => {
             </Button>
           )}
         </Center>
-        <Flex w="100%">
-          <ButtonWithInput
-            text="Добавить"
-            colorScheme="blue"
-            handler={addPhotosFiles}
-            flex={1}
-            isLoading={isLoading}
-          />
-          <Button onClick={save} flex={1} ml={2} isLoading={isSaving}>
-            Сохранить
-          </Button>
-        </Flex>
+        {canUserEdit && (
+          <Flex w="100%">
+            <ButtonWithInput
+              text="Добавить"
+              colorScheme="blue"
+              handler={addPhotosFiles}
+              flex={1}
+              isLoading={isLoading}
+            />
+            <Button onClick={save} flex={1} ml={2} isLoading={isSaving}>
+              Сохранить
+            </Button>
+          </Flex>
+        )}
       </VStack>
     </>
   ) : (
     <Flex direction={"column"}>
       <Text variant="caption">
-        У данного покойника нет фотографий, но вы можете их добавить!
+        У данного покойника нет фотографий
+        {canUserEdit ? ", но вы можете их добавить!" : "."}
       </Text>
       <Flex w="100%" mt={5}>
         <ButtonWithInput
@@ -147,9 +159,11 @@ export const PhotoAlbum = observer((props: PhotoAlbumProps) => {
           flex={1}
           isLoading={isLoading}
         />
-        <Button onClick={save} flex={1} ml={2} isLoading={isSaving}>
-          Сохранить
-        </Button>
+        {canUserEdit && (
+          <Button onClick={save} flex={1} ml={2} isLoading={isSaving}>
+            Сохранить
+          </Button>
+        )}
       </Flex>
     </Flex>
   );

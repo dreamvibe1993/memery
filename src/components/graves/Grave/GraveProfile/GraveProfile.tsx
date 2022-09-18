@@ -135,17 +135,16 @@ export const GraveProfile = observer(() => {
     oldPhotos: Photo[]
   ) => {
     if (!grave?._id) return console.error("Can not update grave without ID!");
-    newPhotos.forEach((f) => console.log(f.file.name));
     const photos = await uploadPhotos(
       newPhotos,
       `${ORIGIN}${API_V1_PHOTOS}/graves`
     );
-    console.log(photos);
     const updatedGrave = await updateGrave({
       photos: [
         ...photos.map((photo: { name: string; url: string }) => ({
           url: photo.url,
-          isAvatar: !!newPhotos.find((f) => f.file.name === photo.name)?.isAvatar,
+          isAvatar: !!newPhotos.find((f) => f.file.name === photo.name)
+            ?.isAvatar,
         })),
         ...oldPhotos,
       ],
@@ -217,6 +216,7 @@ export const GraveProfile = observer(() => {
           onSave={(newPhotos, oldPhotos) =>
             updateGravePhotos(newPhotos, oldPhotos)
           }
+          canUserEdit={canUserEdit(grave, user)}
         />
       </CommonModal>
       <Grid
@@ -316,7 +316,10 @@ export const GraveProfile = observer(() => {
                 />
               )}
               <Img
-                src={grave.photos.find((photo) => photo.isAvatar)?.url || "https://via.placeholder.com/150/000000/FFFFFF/?text=Пусто"}
+                src={
+                  grave?.photos?.find((photo) => photo.isAvatar)?.url ||
+                  "https://via.placeholder.com/150/000000/FFFFFF/?text=Пусто"
+                }
                 onClick={openPhotoGallery}
                 cursor="pointer"
               />
