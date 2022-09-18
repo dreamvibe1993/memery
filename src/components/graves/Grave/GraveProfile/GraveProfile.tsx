@@ -5,37 +5,46 @@ import {
   Grid,
   GridItem,
   Heading,
+  Image,
   Img,
   Text,
   Textarea,
   TransformProps,
   useDisclosure,
-  Input,
 } from "@chakra-ui/react";
 import { observer } from "mobx-react-lite";
-import { ChangeEvent, ReactNode, useState } from "react";
+import { ReactNode, useState } from "react";
 import { AiOutlineGift } from "react-icons/ai";
-import { BiExit, BiMessageRoundedEdit, BiTrash } from "react-icons/bi";
+import {
+  BiExit,
+  BiMessageRoundedEdit,
+  BiPhotoAlbum,
+  BiTrash,
+} from "react-icons/bi";
 import { useHistory } from "react-router-dom";
 import ImageViewer from "react-simple-image-viewer";
-import { routes } from "../../../../configs/urls/app/app-urls";
+import { API_V1_PHOTOS } from "../../../../configs/urls/api/api-urls";
+import { ORIGIN, routes } from "../../../../configs/urls/app/app-urls";
 import { UserProfile } from "../../../../store/mobx/users/classes/UserProfile/UserProfile";
 import { Grave } from "../../../../types/Grave";
+import { Photo } from "../../../../types/Photo";
 import { UserRoles } from "../../../../types/User";
+import { FileExtended } from "../../../../utils/comperssors/photos/compressPhotos";
+import { useGraveContext } from "../../../../utils/hooks/contexts/useGraveContext/useGraveContext";
 import { useDeleteGrave } from "../../../../utils/hooks/graves/useDeleteGrave/useDeleteGrave";
-import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { useReturnUserStore } from "../../../../utils/hooks/mobx/users/useReturnUserStore";
+import { usePhotos } from "../../../../utils/hooks/photos/usePhotos";
 import { mapDateTo } from "../../../../utils/mappers/date/mapDate";
 import { EditableField } from "../../../common/EditableField/EditableField";
 import { HEADER_HEIGHT } from "../../../common/Header/Header";
 import { Alert } from "../../../common/Modal/Alert/Alert";
 import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
-import { format } from "date-fns";
-import { BsFillCalendarDateFill } from "react-icons/bs";
+import { EditDate } from "../../../common/Modal/EditDate/EditDate";
+import { PhotoAlbum } from "../../../common/Modal/PhotoAlbum/PhotoAlbum";
 
-export const GraveProfile = observer((props: useGetGraveReturnType) => {
-  const { grave, refreshGrave } = props;
+export const GraveProfile = observer(() => {
+  const { refreshGrave, grave } = useGraveContext();
   const { updateGraveMessages, updateGrave } = useUpdateGrave();
   const { deleteGrave } = useDeleteGrave();
   const { user } = useReturnUserStore();
@@ -50,6 +59,12 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     isOpen: isPhotoGalleryOpen,
     onOpen: openPhotoGallery,
     onClose: closePhotoGallery,
+  } = useDisclosure();
+
+  const {
+    isOpen: isPhotosOpen,
+    onOpen: openPhotos,
+    onClose: closePhotos,
   } = useDisclosure();
 
   const {
@@ -113,6 +128,33 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     closeEditDiedModal();
   };
 
+  const { uploadPhotos } = usePhotos();
+
+  const updateGravePhotos = async (
+    newPhotos: FileExtended[],
+    oldPhotos: Photo[]
+  ) => {
+    if (!grave?._id) return console.error("Can not update grave without ID!");
+    newPhotos.forEach((f) => console.log(f.file.name));
+    const photos = await uploadPhotos(
+      newPhotos,
+      `${ORIGIN}${API_V1_PHOTOS}/graves`
+    );
+    console.log(photos);
+    const updatedGrave = await updateGrave({
+      photos: [
+        ...photos.map((photo: { name: string; url: string }) => ({
+          url: photo.url,
+          isAvatar: !!newPhotos.find((f) => f.file.name === photo.name)?.isAvatar,
+        })),
+        ...oldPhotos,
+      ],
+      _id: grave._id,
+    });
+    if (!updatedGrave) return console.error("Updated grave was not received!");
+    refreshGrave();
+  };
+
   if (!grave) return null;
 
   return (
@@ -123,7 +165,7 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
           onCancel={closeEditBornModal}
           onConfirm={(date) => changeBornDate(date)}
           dateDefault={grave.born}
-          type="born"
+          ofWhat="рождения"
         />
       )}
       {isEditDiedModalOpen && (
@@ -132,7 +174,7 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
           onCancel={closeEditDiedModal}
           onConfirm={(date) => changeDiedDate(date)}
           dateDefault={grave.died}
-          type="died"
+          ofWhat="смерти"
         />
       )}
       <Alert
@@ -164,7 +206,19 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
           maxLength={100}
         />
       </CommonModal>
-
+      <CommonModal
+        isOpen={isPhotosOpen}
+        onClose={closePhotos}
+        title="Фотографии покойника"
+      >
+        <PhotoAlbum
+          photos={grave.photos}
+          _id={grave._id}
+          onSave={(newPhotos, oldPhotos) =>
+            updateGravePhotos(newPhotos, oldPhotos)
+          }
+        />
+      </CommonModal>
       <Grid
         gridTemplateRows={"auto 290px 10% 40%"}
         gridTemplateColumns={"20% 60% 20%"}
@@ -251,24 +305,36 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
               as={Center}
               border="1px solid grey"
               borderColor="gray.300"
+              overflow="hidden"
             >
               {isPhotoGalleryOpen && (
                 <ImageViewer
-                  src={grave.photos}
+                  src={grave.photos.map((photo) => photo.url)}
                   onClose={closePhotoGallery}
                   disableScroll={true}
                   closeOnClickOutside={true}
                 />
               )}
               <Img
-                src={grave.photos[0]}
+                src={grave.photos.find((photo) => photo.isAvatar)?.url || "https://via.placeholder.com/150/000000/FFFFFF/?text=Пусто"}
                 onClick={openPhotoGallery}
                 cursor="pointer"
               />
             </GridItem>
           </Grid>
         </GridItem>
-        <GridItem area={"cell3"}></GridItem>
+        <GridItem
+          area={"cell3"}
+          as={Flex}
+          flexDirection="column"
+          justifyContent="space-evenly"
+          alignItems="center"
+          pt="40px"
+        >
+          <SvgWrapper>
+            <BiPhotoAlbum onClick={openPhotos} />
+          </SvgWrapper>
+        </GridItem>
 
         <GridItem area={"cell4"}></GridItem>
         <GridItem area={"cell5"} pt={5}>
@@ -311,65 +377,6 @@ export const GraveProfile = observer((props: useGetGraveReturnType) => {
     </>
   );
 });
-
-type EditDateProps = {
-  isOpen: boolean;
-  onCancel: () => void;
-  onConfirm: (date: string) => void;
-  dateDefault: string;
-  type: "born" | "died";
-};
-
-const EditDate = (props: EditDateProps) => {
-  const { isOpen, onCancel, onConfirm, dateDefault, type } = props;
-  const [date, setDate] = useState(dateDefault);
-
-  const changeDate = (e: ChangeEvent<HTMLInputElement>) => {
-    setDate(new Date(e.target.value).toISOString());
-  };
-
-  const formattedDate = format(new Date(date), "yyyy-MM-dd");
-  const formattedDate2 = format(new Date(date), "dd/MM/yyyy");
-
-  const dict = {
-    born: "рождения",
-    died: "смерти",
-  };
-
-  return (
-    <CommonModal
-      isOpen={isOpen}
-      confirmButton={{
-        onClick: () => onConfirm(date),
-      }}
-      cancelButton={{
-        onClick: onCancel,
-      }}
-      onClose={onCancel}
-      title={`Изменить дату ${dict[type]}`}
-    >
-      <Box pos="relative">
-        <Input
-          type="text"
-          pointerEvents="none"
-          value={formattedDate2}
-          readOnly
-          pos="absolute"
-          width="100%"
-        />
-        <Box pos={"absolute"} right="15px" top="50%" transform="translateY(-50%)">
-          <BsFillCalendarDateFill />
-        </Box>
-        <Input
-          type="date"
-          value={formattedDate}
-          onChange={changeDate}
-          opacity={0}
-        />
-      </Box>
-    </CommonModal>
-  );
-};
 
 const canUserEdit = (grave: Grave, user?: UserProfile) =>
   user?.role === UserRoles.admin || user?._id === grave.madeBy.id;

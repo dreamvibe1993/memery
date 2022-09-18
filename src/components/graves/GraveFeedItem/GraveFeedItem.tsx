@@ -53,7 +53,7 @@ export const GraveFeedItem = observer(
           <GridItem area="photo" mr={2}>
             {isPhotoGalleryOpen && (
               <ImageViewer
-                src={grave.photos}
+                src={grave.photos.map((photo) => photo.url)}
                 onClose={closePhotoGallery}
                 disableScroll={true}
                 closeOnClickOutside={true}
@@ -62,8 +62,8 @@ export const GraveFeedItem = observer(
             <Img
               src={
                 grave.photos.length > 0
-                  ? grave.photos[0]
-                  : "https://via.placeholder.com/150/000000/FFFFFF/?text=Ебало"
+                  ? grave.photos.find((photo) => photo.isAvatar)?.url
+                  : "https://via.placeholder.com/150/000000/FFFFFF/?text=Пусто"
               }
               objectFit="cover"
               h="100%"

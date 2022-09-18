@@ -42,7 +42,12 @@ export const usePostGrave = (): UsePostGraveType => {
         history.push(routes.login.root);
         return;
       }
-      data.photos = res.data.photos;
+      data.photos = res.data.photos.map((photoUrl: string, index: number) => {
+        return {
+          url: photoUrl,
+          isAvatar: index === 0,
+        };
+      });
       const readyToPost = mapGraveToBackDTO(data);
       const response = await axios.post(
         `${ORIGIN}${API_V1_GRAVES}`,

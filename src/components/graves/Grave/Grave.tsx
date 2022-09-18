@@ -7,6 +7,7 @@ import {
   TabPanels,
   Tabs,
 } from "@chakra-ui/react";
+import { GraveContext } from "../../../contexts/grave/grave-context";
 import { useGetGrave } from "../../../utils/hooks/graves/useGetGrave/useGetGrave";
 import { GraveGifts } from "./GraveGifts/GraveGifts";
 import { GraveProfile } from "./GraveProfile/GraveProfile";
@@ -27,7 +28,7 @@ export const Grave = () => {
   }
 
   return (
-    <>
+    <GraveContext.Provider value={graveUtils}>
       <Tabs isFitted variant="enclosed" mt={3}>
         <TabList>
           <Tab>Профиль</Tab>
@@ -35,13 +36,13 @@ export const Grave = () => {
         </TabList>
         <TabPanels>
           <TabPanel>
-            <GraveProfile {...graveUtils} />
+            <GraveProfile/>
           </TabPanel>
           <TabPanel>
-            <GraveGifts {...graveUtils} />
+            <GraveGifts/>
           </TabPanel>
         </TabPanels>
       </Tabs>
-    </>
+    </GraveContext.Provider>
   );
 };

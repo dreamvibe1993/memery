@@ -17,13 +17,13 @@ import { MdLocalDrink } from "react-icons/md";
 import { TbCandy } from "react-icons/tb";
 import { CommonLoaderContext } from "../../../../contexts/common-loader/common-loader";
 import { Gift, GiftTypes } from "../../../../types/Gift";
-import { useGetGraveReturnType } from "../../../../utils/hooks/graves/useGetGrave/useGetGrave";
+import { useGraveContext } from "../../../../utils/hooks/contexts/useGraveContext/useGraveContext";
 import { useUpdateGrave } from "../../../../utils/hooks/graves/useUpdateGrave/useUpdateGrave";
 import { CommonModal } from "../../../common/Modal/CommonModal/CommonModal";
 import { GiftWithModal } from "../../../gifts/Gift/Gift";
 
-export const GraveGifts = (props: useGetGraveReturnType) => {
-  const { grave, refreshGrave } = props;
+export const GraveGifts = () => {
+  const { grave, refreshGrave } = useGraveContext();
   const { onOpen: openCommonLoader, onClose: closeCommonLoader } =
     useContext(CommonLoaderContext);
   const {
@@ -65,7 +65,6 @@ export const GraveGifts = (props: useGetGraveReturnType) => {
       closeCommonLoader();
     }
   };
-
 
   const handleMessage = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setMessage(e.target.value);

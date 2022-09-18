@@ -20,11 +20,11 @@ export const AddGraveForm = (props: AddGraveFormProps) => {
       born: "",
       died: "",
       lastWords: "",
-      photos: photoUtils.photos,
+      photos: photoUtils.newPhotosFiles,
     },
     validationSchema: graveSchema,
     onSubmit: async (values) => {
-      await postNewGrave({ ...values, photos: photoUtils.photos });
+      await postNewGrave({ ...values, photos: photoUtils.newPhotosFiles });
       handleAfterSubmit();
     },
   });

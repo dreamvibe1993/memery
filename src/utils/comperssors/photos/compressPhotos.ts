@@ -1,6 +1,11 @@
 import imageCompression from "browser-image-compression";
+import { Photo } from "../../../types/Photo";
 
-export type FileExtended = { file: File; url: string; id: string };
+export type FileExtended = {
+  file: File;
+  url: string;
+  id: string;
+} & Partial<Photo>;
 
 export const compressPhotos = async (
   e: React.ChangeEvent<HTMLInputElement>
@@ -33,6 +38,7 @@ export const compressPhotos = async (
     file,
     url: URL.createObjectURL(file),
     id: URL.createObjectURL(file),
+    isAvatar: false,
   }));
 };
 

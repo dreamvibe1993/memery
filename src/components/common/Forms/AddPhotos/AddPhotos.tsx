@@ -1,24 +1,26 @@
-import { Button, Center, Input, Spinner, VStack } from "@chakra-ui/react";
+import { Center, Spinner, VStack } from "@chakra-ui/react";
 import { AiOutlineClose } from "react-icons/ai";
 import styled from "styled-components";
-import { UsePhotosReturnType } from "../../../../utils/hooks/photos/usePhotos";
+import {
+  usePhotos,
+} from "../../../../utils/hooks/photos/usePhotos";
+import { ButtonWithInput } from "../../Buttons/ButtonWithInput";
 
-export const AddPhotos = (props: UsePhotosReturnType) => {
-  const { photos, isLoading, deletePhoto, addPhoto } = props;
-
+export const AddPhotos = (props: ReturnType<typeof usePhotos>) => {
+  const { newPhotosFiles, isLoading, addPhotosFiles, deletePhotoFile } = props;
   return (
     <VStack maxH="240px" overflowY="auto" w="100%" pos="relative">
       <Center bg="white" pos="sticky" top="0" w="100%" py={2} zIndex={10}>
-        {photos.length < 1 ? (
-          <ButtonWithInput text="ДОБАВИТЬ ФОТО" handler={(e) => addPhoto(e)} />
+        {newPhotosFiles.length < 1 ? (
+          <ButtonWithInput text="ДОБАВИТЬ ФОТО" handler={(e) => addPhotosFiles(e)} />
         ) : (
           <ButtonWithInput
             text="ДОБАВИТЬ БОЛЬШЕ"
-            handler={(e) => addPhoto(e)}
+            handler={(e) => addPhotosFiles(e)}
           />
         )}
       </Center>
-      {photos.map((blob) => (
+      {newPhotosFiles.map((blob) => (
         <Center
           key={blob.id}
           mb={10}
@@ -40,7 +42,7 @@ export const AddPhotos = (props: UsePhotosReturnType) => {
             <Spinner />
           ) : (
             <>
-              <AiOutlineClose onClick={() => deletePhoto(blob.id)} />
+              <AiOutlineClose onClick={() => deletePhotoFile(blob.id)} />
               <LilPic src={blob.url} />
             </>
           )}
@@ -50,36 +52,7 @@ export const AddPhotos = (props: UsePhotosReturnType) => {
   );
 };
 
-const ButtonWithInput = (props: {
-  text: string;
-  handler: React.ChangeEventHandler<HTMLInputElement> | undefined;
-}) => {
-  return (
-    <Button w="100%">
-      {props.text}
-      <FileInput
-        type="file"
-        accept="image/*"
-        multiple
-        onChange={props.handler}
-        opacity={0}
-        pos
-      />
-    </Button>
-  );
-};
-
 const LilPic = styled.img`
   height: 100%;
   margin: 0px 5px;
-`;
-
-const FileInput = styled(Input)`
-  opacity: 0;
-  cursor: pointer;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
 `;
